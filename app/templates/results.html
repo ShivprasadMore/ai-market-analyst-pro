@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results - AI Market Research Analyst</title>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --bg: #f4f7f9;
+            --text: #333;
+            --white: #ffffff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .section-title i {
+            margin-right: 15px;
+            font-style: normal;
+        }
+
+        .summary-text {
+            font-size: 1.2rem;
+            color: #555;
+            font-style: italic;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        li:before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+            margin-right: 15px;
+            font-size: 1.4rem;
+            line-height: 1.2;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            background: var(--secondary);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .badge-success {
+            color: var(--success);
+        }
+
+        .badge-danger {
+            color: var(--danger);
+        }
+
+        .badge-info {
+            color: var(--info);
+        }
+
+        .badge-warning {
+            color: var(--warning);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Market Analysis Report</h1>
+        <p>AI-Powered Strategic Insights</p>
+    </header>
+
+    <div class="container" id="resultsContainer">
+        <!-- Results will be injected here -->
+        <div id="content" style="display: none;">
+            <!-- Current Situation -->
+            <div class="card">
+                <h2 class="section-title"><i>🏢</i> Current Business Situation</h2>
+                <div id="situation" class="summary-text"></div>
+            </div>
+
+            <div class="grid">
+                <!-- Strengths -->
+                <div class="card">
+                    <h2 class="section-title badge-success"><i>💪</i> Strategic Strengths</h2>
+                    <ul id="strengths"></ul>
+                </div>
+
+                <!-- Weaknesses -->
+                <div class="card">
+                    <h2 class="section-title badge-danger"><i>⚖️</i> Critical Risks</h2>
+                    <ul id="weaknesses"></ul>
+                </div>
+            </div>
+
+            <div class="grid">
+                <!-- Suggestions -->
+                <div class="card">
+                    <h2 class="section-title badge-info"><i>💡</i> Smart Suggestions</h2>
+                    <ul id="suggestions"></ul>
+                </div>
+
+                <!-- Moves -->
+                <div class="card">
+                    <h2 class="section-title badge-warning"><i>🚀</i> Strategic Next Moves</h2>
+                    <ul id="moves"></ul>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <a href="/" class="btn">Analyze Another Report</a>
+            </div>
+        </div>
+
+        <div id="noData" class="card no-data">
+            <h2>No analysis data found</h2>
+            <p>Please go back and upload a report first.</p>
+            <div class="btn-container">
+                <a href="/" class="btn">Go Back</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultsData = sessionStorage.getItem('analysisResults');
+
+            if (resultsData) {
+                const data = JSON.parse(resultsData);
+                document.getElementById('noData').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+                // Inject Situation
+                document.getElementById('situation').textContent = data.current_business_situation;
+
+                // Inject Lists
+                renderList('strengths', data.strong_points);
+                renderList('weaknesses', data.weak_points);
+                renderList('suggestions', data.smart_suggestions);
+                renderList('moves', data.next_strategic_moves);
+            }
+        });
+
+        function renderList(id, items) {
+            const list = document.getElementById(id);
+            list.innerHTML = '';
+
+            if (items && items.length > 0) {
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    list.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = "No data available in this category.";
+                li.style.color = "#999";
+                li.style.fontStyle = "italic";
+                list.appendChild(li);
+            }
+        }
+    </script>
+</body>
+
+</html>
