@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analysis Results - AI Market Research Analyst</title>
+    <title>Analysis Dashboard - AI Market Analyst Pro</title>
     <style>
         :root {
             --primary: #667eea;
@@ -16,6 +16,10 @@
             --danger: #dc3545;
             --warning: #ffc107;
             --info: #17a2b8;
+            --swot-s: #e8f5e9;
+            --swot-w: #ffebee;
+            --swot-o: #e3f2fd;
+            --swot-t: #fff3e0;
         }
 
         * {
@@ -38,47 +42,83 @@
             padding: 40px 20px;
             text-align: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 40px;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            margin-bottom: 30px;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
         .card {
             background: var(--white);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
         }
 
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: var(--secondary);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-        }
-
-        .section-title i {
-            margin-right: 15px;
-            font-style: normal;
+            padding-bottom: 8px;
         }
 
         .summary-text {
-            font-size: 1.2rem;
-            color: #555;
-            font-style: italic;
+            font-size: 1.1rem;
+            color: #444;
+            line-height: 1.7;
+        }
+
+        /* SWOT Grid */
+        .swot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .swot-box {
+            padding: 20px;
+            border-radius: 10px;
+            height: 100%;
+        }
+
+        .swot-box h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+        .swot-box h3 i {
+            margin-right: 10px;
+            font-style: normal;
+        }
+
+        .s-box {
+            background: var(--swot-s);
+            border: 1px solid #c8e6c9;
+        }
+
+        .w-box {
+            background: var(--swot-w);
+            border: 1px solid #ffcdd2;
+        }
+
+        .o-box {
+            background: var(--swot-o);
+            border: 1px solid #bbdefb;
+        }
+
+        .t-box {
+            background: var(--swot-t);
+            border: 1px solid #ffe0b2;
         }
 
         ul {
@@ -86,183 +126,213 @@
         }
 
         li {
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            align-items: flex-start;
+            padding: 8px 0;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            padding-left: 20px;
+        }
+
+        li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
         }
 
         li:last-child {
             border-bottom: none;
         }
 
-        li:before {
-            content: "•";
-            color: var(--primary);
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-            margin-left: -1em;
-            margin-right: 15px;
-            font-size: 1.4rem;
-            line-height: 1.2;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            header h1 {
-                font-size: 1.8rem;
-            }
-        }
-
-        .btn-container {
-            text-align: center;
-            margin-top: 40px;
+        /* Actions */
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
         }
 
         .btn {
-            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            border: none;
+        }
+
+        .btn-primary {
             background: var(--primary);
             color: white;
-            text-decoration: none;
-            padding: 15px 35px;
-            border-radius: 50px;
-            font-weight: bold;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-            background: var(--secondary);
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
-        .no-data {
-            text-align: center;
-            padding: 50px;
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .actions,
+            header,
+            .btn-container {
+                display: none !important;
+            }
+
+            .container {
+                max-width: 100%;
+                border: none;
+                box-shadow: none;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #eee;
+                margin-bottom: 20px;
+                page-break-inside: avoid;
+            }
+
+            .swot-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .swot-box {
+                border: 1px solid #ddd;
+                background: white !important;
+            }
+
+            header {
+                display: block !important;
+                background: white !important;
+                color: black !important;
+                padding: 20px;
+                box-shadow: none;
+                border-bottom: 2px solid #333;
+            }
+
+            header h1 {
+                color: black !important;
+            }
         }
 
-        .badge-success {
-            color: var(--success);
-        }
-
-        .badge-danger {
-            color: var(--danger);
-        }
-
-        .badge-info {
-            color: var(--info);
-        }
-
-        .badge-warning {
-            color: var(--warning);
+        @media (max-width: 768px) {
+            .swot-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
-    <header>
-        <h1>Market Analysis Report</h1>
-        <p>AI-Powered Strategic Insights</p>
+    <header id="printHeader">
+        <h1>Market Strategy Dashboard</h1>
+        <p id="reportMeta"></p>
     </header>
 
-    <div class="container" id="resultsContainer">
-        <!-- Results will be injected here -->
-        <div id="content" style="display: none;">
-            <!-- Current Situation -->
-            <div class="card">
-                <h2 class="section-title"><i>🏢</i> Current Business Situation</h2>
-                <div id="situation" class="summary-text"></div>
+    <div class="container">
+        <!-- Situation Card -->
+        <div class="card">
+            <h2 class="section-title">🏢 Business Context</h2>
+            <div id="situation" class="summary-text"></div>
+        </div>
+
+        <!-- SWOT Dashboard -->
+        <div class="swot-grid">
+            <div class="swot-box s-box">
+                <h3><i>💪</i> Strengths</h3>
+                <ul id="strengths"></ul>
             </div>
-
-            <div class="grid">
-                <!-- Strengths -->
-                <div class="card">
-                    <h2 class="section-title badge-success"><i>💪</i> Strategic Strengths</h2>
-                    <ul id="strengths"></ul>
-                </div>
-
-                <!-- Weaknesses -->
-                <div class="card">
-                    <h2 class="section-title badge-danger"><i>⚖️</i> Critical Risks</h2>
-                    <ul id="weaknesses"></ul>
-                </div>
+            <div class="swot-box w-box">
+                <h3><i>⚖️</i> Weaknesses</h3>
+                <ul id="weaknesses"></ul>
             </div>
-
-            <div class="grid">
-                <!-- Suggestions -->
-                <div class="card">
-                    <h2 class="section-title badge-info"><i>💡</i> Smart Suggestions</h2>
-                    <ul id="suggestions"></ul>
-                </div>
-
-                <!-- Moves -->
-                <div class="card">
-                    <h2 class="section-title badge-warning"><i>🚀</i> Strategic Next Moves</h2>
-                    <ul id="moves"></ul>
-                </div>
+            <div class="swot-box o-box">
+                <h3><i>💡</i> Opportunities</h3>
+                <ul id="suggestions"></ul>
             </div>
-
-            <div class="btn-container">
-                <a href="/" class="btn">Analyze Another Report</a>
+            <div class="swot-box t-box">
+                <h3><i>🚀</i> Strategic Focus</h3>
+                <ul id="moves"></ul>
             </div>
         </div>
 
-        <div id="noData" class="card no-data">
-            <h2>No analysis data found</h2>
-            <p>Please go back and upload a report first.</p>
-            <div class="btn-container">
-                <a href="/" class="btn">Go Back</a>
-            </div>
+        <div class="actions">
+            <a href="/" class="btn btn-outline">← Analyze New</a>
+            <button onclick="window.print()" class="btn btn-primary">🖨️ Download PDF</button>
+            <button onclick="copyRawJson()" class="btn btn-outline">📋 Copy JSON</button>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const resultsData = sessionStorage.getItem('analysisResults');
-
-            if (resultsData) {
-                const data = JSON.parse(resultsData);
-                document.getElementById('noData').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-
-                // Inject Situation
-                document.getElementById('situation').textContent = data.current_business_situation;
-
-                // Inject Lists
-                renderList('strengths', data.strong_points);
-                renderList('weaknesses', data.weak_points);
-                renderList('suggestions', data.smart_suggestions);
-                renderList('moves', data.next_strategic_moves);
+            if (!resultsData) {
+                window.location.href = '/';
+                return;
             }
+
+            const data = JSON.parse(resultsData);
+
+            // Populate Data
+            document.getElementById('situation').textContent = data.current_business_situation;
+            renderList('strengths', data.strong_points);
+            renderList('weaknesses', data.weak_points);
+            renderList('suggestions', data.smart_suggestions);
+            renderList('moves', data.next_strategic_moves);
+
+            // Add timestamp to header
+            const date = new Date().toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+            document.getElementById('reportMeta').textContent = `Generated on ${date}`;
+
+            // Save to Local History
+            saveToHistory(data);
         });
 
         function renderList(id, items) {
             const list = document.getElementById(id);
-            list.innerHTML = '';
+            list.innerHTML = items?.length ? items.map(item => `<li>${item}</li>`).join('') : '<li>No data found.</li>';
+        }
 
-            if (items && items.length > 0) {
-                items.forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item;
-                    list.appendChild(li);
-                });
-            } else {
-                const li = document.createElement('li');
-                li.textContent = "No data available in this category.";
-                li.style.color = "#999";
-                li.style.fontStyle = "italic";
-                list.appendChild(li);
+        function saveToHistory(data) {
+            const history = JSON.parse(localStorage.getItem('analysisHistory') || '[]');
+            // Don't save duplicates (briefly check situation prefix)
+            const exists = history.some(h => h.current_business_situation === data.current_business_situation);
+            if (!exists) {
+                const historyItem = {
+                    ...data,
+                    timestamp: new Date().toISOString(),
+                    id: Date.now()
+                };
+                history.unshift(historyItem);
+                localStorage.setItem('analysisHistory', JSON.stringify(history.slice(0, 5))); // Keep last 5
+            }
+        }
+
+        async function copyRawJson() {
+            const resultsData = sessionStorage.getItem('analysisResults');
+            try {
+                await navigator.clipboard.writeText(resultsData);
+                alert('Analysis JSON copied to clipboard!');
+            } catch (err) {
+                alert('Failed to copy: ' + err);
             }
         }
     </script>

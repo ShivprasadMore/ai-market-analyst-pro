@@ -19,7 +19,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
         .container {
@@ -27,7 +27,7 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             padding: 40px;
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             text-align: center;
         }
@@ -62,11 +62,7 @@
             font-size: 48px;
             color: #667eea;
             margin-bottom: 15px;
-        }
-
-        .upload-area p {
-            color: #666;
-            margin: 5px 0;
+            display: block;
         }
 
         .file-name {
@@ -80,12 +76,13 @@
             color: white;
             border: none;
             padding: 12px 30px;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.3s;
             width: 100%;
+            margin-bottom: 10px;
         }
 
         button:hover {
@@ -124,28 +121,86 @@
 
         .error {
             color: #dc3545;
-            margin: 10px 0;
             padding: 10px;
             background: #f8d7da;
             border-radius: 5px;
             display: none;
+            margin-bottom: 15px;
         }
 
-        .info {
-            color: #666;
-            font-size: 14px;
-            margin-top: 20px;
-            padding: 10px;
+        /* History Section */
+        .history-section {
+            margin-top: 40px;
+            text-align: left;
+            border-top: 1px solid #eee;
+            padding-top: 30px;
+            display: none;
+        }
+
+        .history-title {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-btn {
+            font-size: 0.8rem;
+            color: #999;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: auto;
+            text-decoration: underline;
+            margin: 0;
+        }
+
+        .clear-btn:hover {
+            color: #dc3545;
+        }
+
+        .history-list {
+            list-style: none;
+        }
+
+        .history-item {
+            padding: 12px;
             background: #f8f9fa;
-            border-radius: 5px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .history-item:hover {
+            background: #eef2ff;
+            border-color: #667eea;
+        }
+
+        .history-item-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .history-item-date {
+            font-size: 0.75rem;
+            color: #999;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>📊 AI Market Research Analyst</h1>
-        <p class="subtitle">Upload a business report PDF for instant AI-powered analysis</p>
+        <h1>📊 AI Market Analyst</h1>
+        <p class="subtitle">Upload a business report PDF for strategic insights</p>
 
         <div class="upload-area" id="uploadArea">
             <i>📁</i>
@@ -155,18 +210,22 @@
         </div>
 
         <div class="file-name" id="fileName"></div>
-
         <button id="analyzeBtn" disabled>Analyze Report</button>
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Analyzing your report... (may take 15-30 seconds)</p>
+            <p>Processing report... (15-30s)</p>
         </div>
 
         <div class="error" id="error"></div>
 
-        <div class="info">
-            <strong>📌 Note:</strong> Your PDF should contain text (not scanned images) for best results.
+        <!-- History Section -->
+        <div class="history-section" id="historySection">
+            <div class="history-title">
+                Recent Analyses
+                <button class="clear-btn" onclick="clearHistory()">Clear History</button>
+            </div>
+            <ul class="history-list" id="historyList"></ul>
         </div>
     </div>
 
@@ -180,17 +239,11 @@
 
         let selectedFile = null;
 
-        // Click upload area to trigger file input
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
+        document.addEventListener('DOMContentLoaded', updateHistoryUI);
 
-        // Handle file selection via input
-        fileInput.addEventListener('change', (e) => {
-            handleFileSelect(e.target.files[0]);
-        });
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files[0]));
 
-        // Handle drag and drop
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.style.borderColor = '#667eea';
@@ -207,22 +260,14 @@
             e.preventDefault();
             uploadArea.style.borderColor = '#ccc';
             uploadArea.style.background = 'white';
-
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFileSelect(files[0]);
-            }
+            if (e.dataTransfer.files.length) handleFileSelect(e.dataTransfer.files[0]);
         });
 
         function handleFileSelect(file) {
-            if (!file) return;
-
-            // Validate file type
-            if (!file.name.toLowerCase().endsWith('.pdf')) {
-                showError('Please select a PDF file');
+            if (!file || !file.name.toLowerCase().endsWith('.pdf')) {
+                showError('Please select a valid PDF file');
                 return;
             }
-
             selectedFile = file;
             fileName.textContent = `Selected: ${file.name}`;
             analyzeBtn.disabled = false;
@@ -231,28 +276,18 @@
 
         analyzeBtn.addEventListener('click', async () => {
             if (!selectedFile) return;
-
-            // Show loading, hide previous results/errors
             loading.style.display = 'block';
             analyzeBtn.disabled = true;
             hideError();
 
-            // Prepare form data
             const formData = new FormData();
             formData.append('file', selectedFile);
 
             try {
-                const response = await fetch('/api/analyze', {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const response = await fetch('/api/analyze', { method: 'POST', body: formData });
                 const result = await response.json();
-
                 if (result.success) {
-                    // Store results in sessionStorage for results page
                     sessionStorage.setItem('analysisResults', JSON.stringify(result.data));
-                    // Redirect to results page (we'll create this next)
                     window.location.href = '/results';
                 } else {
                     showError(result.error || 'Analysis failed');
@@ -265,14 +300,49 @@
             }
         });
 
-        function showError(message) {
-            error.textContent = message;
-            error.style.display = 'block';
+        function updateHistoryUI() {
+            const history = JSON.parse(localStorage.getItem('analysisHistory') || '[]');
+            const section = document.getElementById('historySection');
+            const list = document.getElementById('historyList');
+
+            if (history.length) {
+                section.style.display = 'block';
+                list.innerHTML = history.map(item => `
+                    <li class="history-item" onclick="loadHistoryItem(${item.id})">
+                        <span class="history-item-title">${item.current_business_situation}</span>
+                        <span class="history-item-date">${new Date(item.timestamp).toLocaleString()}</span>
+                    </li>
+                `).join('');
+            } else {
+                section.style.display = 'none';
+            }
         }
 
-        function hideError() {
-            error.style.display = 'none';
+        function loadHistoryItem(id) {
+            const history = JSON.parse(localStorage.getItem('analysisHistory') || '[]');
+            const item = history.find(h => h.id === id);
+            if (item) {
+                // Ensure same format as API response
+                sessionStorage.setItem('analysisResults', JSON.stringify({
+                    current_business_situation: item.current_business_situation,
+                    strong_points: item.strong_points,
+                    weak_points: item.weak_points,
+                    smart_suggestions: item.smart_suggestions,
+                    next_strategic_moves: item.next_strategic_moves
+                }));
+                window.location.href = '/results';
+            }
         }
+
+        function clearHistory() {
+            if (confirm('Clear analysis history?')) {
+                localStorage.removeItem('analysisHistory');
+                updateHistoryUI();
+            }
+        }
+
+        function showError(message) { error.textContent = message; error.style.display = 'block'; }
+        function hideError() { error.style.display = 'none'; }
     </script>
 </body>
 
