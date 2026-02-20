@@ -9,10 +9,11 @@ class GeminiClient:
     
     # List of models to try in order
     AVAILABLE_MODELS = [
-        "gemini-3.1-pro",
-        "gemini-2.0-flash",
-        "gemini-1.5-flash",
-        "gemini-1.5-pro"
+        "models/gemini-2.0-flash-latest",
+        "models/gemini-1.5-pro-latest",
+        "models/gemini-1.5-flash-latest",
+        "models/gemini-1.5-pro",
+        "models/gemini-1.5-flash"
     ]
     
     def __init__(self, api_key: str, model: str = None):
