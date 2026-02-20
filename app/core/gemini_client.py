@@ -2,23 +2,55 @@
 Client for interacting with Google Gemini API.
 """
 import google.generativeai as genai
-from typing import Optional
+from typing import Optional, List
 
 class GeminiClient:
-    """Handles communication with Gemini models."""
+    """Handles communication with Gemini models with fallback options."""
     
-    def __init__(self, api_key: str, model: str = "gemini-1.5-pro"):
+    # List of models to try in order
+    AVAILABLE_MODELS = [
+        "gemini-3.1-pro",
+        "gemini-2.0-flash",
+        "gemini-1.5-flash",
+        "gemini-1.5-pro"
+    ]
+    
+    def __init__(self, api_key: str, model: str = None):
         """
         Initialize the Gemini client.
         
         Args:
             api_key: Your Google Gemini API key.
-            model: The model to use (default: gemini-1.5-pro).
+            model: The model to use. If None, will try available models.
         """
         self.api_key = api_key
-        self.model_name = model
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel(model)
+        
+        if model:
+            self.model_name = model
+            self.model = genai.GenerativeModel(model)
+        else:
+            # Try to find a working model
+            self.model = None
+            self.model_name = None
+            self._find_working_model()
+    
+    def _find_working_model(self):
+        """Try different models until one works."""
+        for model_name in self.AVAILABLE_MODELS:
+            try:
+                # Test the model with a simple prompt
+                test_model = genai.GenerativeModel(model_name)
+                test_response = test_model.generate_content("test", generation_config={"max_output_tokens": 1})
+                self.model = test_model
+                self.model_name = model_name
+                print(f"✅ Using model: {model_name}")
+                return
+            except Exception as e:
+                print(f"❌ Model {model_name} failed: {e}")
+                continue
+        
+        raise Exception("No working Gemini model found. Please check your API key and quota.")
     
     def generate_content(self, prompt: str, text: str) -> Optional[str]:
         """
