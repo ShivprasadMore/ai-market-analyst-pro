@@ -293,6 +293,49 @@
                 font-size: 20px;
             }
         }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 !important;
+            }
+
+            .back-btn,
+            .actions,
+            .chart-container,
+            .header p {
+                display: none !important;
+            }
+
+            .container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                break-inside: avoid;
+            }
+
+            .header h1 {
+                color: black !important;
+                text-shadow: none !important;
+                margin-bottom: 20px !important;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 15px !important;
+            }
+
+            .list-item {
+                background: white !important;
+                border: 1px solid #eee !important;
+            }
+        }
     </style>
 </head>
 
@@ -386,6 +429,16 @@
                 </h3>
                 <canvas id="insightsChart"></canvas>
             </div>
+
+            <!-- Action Buttons -->
+            <div class="actions" style="display: flex; justify-content: center; gap: 15px; margin-top: 30px;">
+                <button onclick="window.print()" class="retry-btn" style="background: #28a745;">
+                    <i class="fas fa-print"></i> Download PDF
+                </button>
+                <button onclick="copyRawJson()" class="retry-btn" style="background: #17a2b8;">
+                    <i class="fas fa-copy"></i> Copy JSON
+                </button>
+            </div>
         </div>
     </div>
 
@@ -426,60 +479,31 @@
             // Current situation
             situationP.textContent = data.current_business_situation || 'No situation data available';
 
-            // Strong points
-            strongList.innerHTML = '';
-            if (data.strong_points && data.strong_points.length > 0) {
-                data.strong_points.forEach(point => {
-                    const li = document.createElement('li');
-                    li.className = 'list-item';
-                    li.innerHTML = `<i class="fas fa-check-circle" style="color: #28a745;"></i>${point}`;
-                    strongList.appendChild(li);
-                });
-            } else {
-                strongList.innerHTML = '<li class="empty-state"><i class="fas fa-info-circle"></i>No strong points identified</li>';
-            }
-
-            // Weak points
-            weakList.innerHTML = '';
-            if (data.weak_points && data.weak_points.length > 0) {
-                data.weak_points.forEach(point => {
-                    const li = document.createElement('li');
-                    li.className = 'list-item';
-                    li.innerHTML = `<i class="fas fa-exclamation-circle" style="color: #dc3545;"></i>${point}`;
-                    weakList.appendChild(li);
-                });
-            } else {
-                weakList.innerHTML = '<li class="empty-state"><i class="fas fa-info-circle"></i>No weak points identified</li>';
-            }
-
-            // Smart suggestions
-            suggestionsList.innerHTML = '';
-            if (data.smart_suggestions && data.smart_suggestions.length > 0) {
-                data.smart_suggestions.forEach(suggestion => {
-                    const li = document.createElement('li');
-                    li.className = 'list-item';
-                    li.innerHTML = `<i class="fas fa-lightbulb" style="color: #ffc107;"></i>${suggestion}`;
-                    suggestionsList.appendChild(li);
-                });
-            } else {
-                suggestionsList.innerHTML = '<li class="empty-state"><i class="fas fa-info-circle"></i>No suggestions available</li>';
-            }
-
-            // Strategic moves
-            movesList.innerHTML = '';
-            if (data.next_strategic_moves && data.next_strategic_moves.length > 0) {
-                data.next_strategic_moves.forEach(move => {
-                    const li = document.createElement('li');
-                    li.className = 'list-item';
-                    li.innerHTML = `<i class="fas fa-arrow-right" style="color: #17a2b8;"></i>${move}`;
-                    movesList.appendChild(li);
-                });
-            } else {
-                movesList.innerHTML = '<li class="empty-state"><i class="fas fa-info-circle"></i>No strategic moves identified</li>';
-            }
+            // Render lists with helper
+            renderList(strongList, data.strong_points, 'fa-check-circle', '#28a745');
+            renderList(weakList, data.weak_points, 'fa-exclamation-circle', '#dc3545');
+            renderList(suggestionsList, data.smart_suggestions, 'fa-lightbulb', '#ffc107');
+            renderList(movesList, data.next_strategic_moves, 'fa-arrow-right', '#17a2b8');
 
             // Create chart
             createChart(data);
+
+            // Save to history
+            saveToHistory(data);
+        }
+
+        function renderList(container, items, icon, color) {
+            container.innerHTML = '';
+            if (items && items.length > 0) {
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'list-item';
+                    li.innerHTML = `<i class="fas ${icon}" style="color: ${color};"></i>${item}`;
+                    container.appendChild(li);
+                });
+            } else {
+                container.innerHTML = '<li class="empty-state"><i class="fas fa-info-circle"></i>No insights available</li>';
+            }
         }
 
         function createChart(data) {
@@ -552,6 +576,30 @@
                     }
                 }
             });
+        }
+
+        function saveToHistory(data) {
+            const history = JSON.parse(localStorage.getItem('analysisHistory') || '[]');
+            const exists = history.some(h => h.current_business_situation === data.current_business_situation);
+            if (!exists) {
+                const historyItem = {
+                    ...data,
+                    timestamp: new Date().toISOString(),
+                    id: Date.now()
+                };
+                history.unshift(historyItem);
+                localStorage.setItem('analysisHistory', JSON.stringify(history.slice(0, 5)));
+            }
+        }
+
+        async function copyRawJson() {
+            const resultsData = sessionStorage.getItem('analysisResults');
+            try {
+                await navigator.clipboard.writeText(resultsData);
+                alert('Analysis JSON copied to clipboard!');
+            } catch (err) {
+                alert('Failed to copy: ' + err);
+            }
         }
 
         function showError(message) {
