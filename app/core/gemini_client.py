@@ -4,6 +4,7 @@ Client for interacting with Google Gemini API using the new google-genai SDK.
 import logging
 from google import genai
 from google.genai import types
+import time
 from typing import Optional
 
 # Setup logging
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 class GeminiClient:
     """Handles communication with Gemini models with automatic fallback."""
     
-    def __init__(self, api_key: str, model: str = "gemini-2.0-flash"):
+    def __init__(self, api_key: str, model: str = "gemini-3-flash-preview"):
         """
         Initialize the Gemini client.
         
@@ -26,15 +27,17 @@ class GeminiClient:
             http_options=types.HttpOptions(timeout=120_000)  # 120s timeout in milliseconds
         )
         self.primary_model = model
-        # Speed-optimized fallback chain: primary → 2.0-flash → 2.0-flash-lite
+        # Optimized fallback chain for speed: 3-flash → 3.1-lite → 2.5-lite → 2.5-flash
         self.fallback_models = [
             model,
-            "gemini-2.0-flash",
-            "gemini-2.0-flash-lite",
+            "gemini-3-flash-preview",
+            "gemini-3.1-flash-lite-preview",
+            "gemini-2.5-flash-lite",
+            "gemini-2.5-flash",
         ]
         # Remove duplicates while preserving order
         self.fallback_models = list(dict.fromkeys(self.fallback_models))
-        logger.info(f"Gemini Client initialized. Models: {self.fallback_models}")
+        logger.info(f"Gemini Client initialized with model preferences: {self.fallback_models}")
     
     def generate_content(self, system_prompt: str, user_content: str) -> Optional[str]:
         """
@@ -80,6 +83,8 @@ class GeminiClient:
                     logger.error(f"Unexpected error with {model_name}: {str(e)}")
                 
                 last_exception = e
+                # Small delay to avoid hammering the API
+                time.sleep(0.5)
                 continue
         
         # If we get here, all models failed

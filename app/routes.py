@@ -141,6 +141,8 @@ def analyze():
             return jsonify({"success": False, "error": "API rate limit reached. Please wait a moment and try again."}), 429
         except Exception as e:
             err_str = str(e).lower()
+            if "429" in err_str or "quota" in err_str or "exhausted" in err_str:
+                return jsonify({"success": False, "error": "API rate limit reached. Please wait a moment and try again."}), 429
             if "network" in err_str or "connection" in err_str or "timeout" in err_str:
                 return jsonify({"success": False, "error": "Network error — could not reach the AI service. Please check your connection and try again."}), 503
             return jsonify({"success": False, "error": f"AI service error: {str(e)}"}), 500
