@@ -29,6 +29,14 @@ The platform is built on a modern, decoupled architecture designed for high avai
 
 ---
 
+## 📄 Technical Documentation
+For a detailed overview of the architecture, data security protocols, and implementation details, see the [full technical documentation](TECHNICAL_DOCUMENTATION.md). 
+
+> [!NOTE]
+> You can also access the [External Google Doc Version](https://docs.google.com/your-doc-link) if preferred for stakeholders.
+
+---
+
 ## �️ Enterprise Grade Implementation
 
 ### Data Privacy & Security
