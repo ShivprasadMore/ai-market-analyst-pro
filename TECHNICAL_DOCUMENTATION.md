@@ -35,6 +35,12 @@ The platform is built on a modern, decoupled architecture designed for high avai
 
 ---
 
+## 🎥 Demo Video
+A complete walkthrough of the application is available here:  
+**`[Demo video link - will be updated after recording]`**
+
+---
+
 ## 4. Key Implementation Features
 
 ### 🛡️ Data Privacy & Security

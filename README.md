@@ -18,6 +18,12 @@ The platform is built on a modern, decoupled architecture designed for high avai
 
 ---
 
+## 🎥 Demo Video
+A complete walkthrough of the application is available here:  
+**`[Demo video link - will be updated after recording]`**
+
+---
+
 ## 📄 Technical Documentation
 For a detailed overview of the architecture, data security protocols, and implementation details, see the [full technical documentation](TECHNICAL_DOCUMENTATION.md). 
 
