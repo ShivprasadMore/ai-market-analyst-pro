@@ -1,620 +1,1949 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analysis Results - AI Market Research Analyst</title>
-    <!-- Chart.js for beautiful charts -->
+    <title>Analysis Insights | AI Market Analyst Pro</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- WordCloud2.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.0.2/wordcloud2.min.js"></script>
+    <!-- Tippy.js dependencies -->
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: { 50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd', 400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9', 800: '#5b21b6', 900: '#4c1d95' },
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- Standard CSS (Animations & Fallbacks) -->
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* === Design Token Variables === */
+        :root {
+            --primary: #8b5cf6;
+            --primary-light: #a78bfa;
+            --accent: #ec4899;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
+        /* ── DARK MODE (default, Tailwind dark: class active) ── */
+        html.dark,
+        html.dark body {
+            background-color: #06060f !important;
+            color: #f1f5f9 !important;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* ── LIGHT MODE (dark class removed) ── */
+        html:not(.dark),
+        html:not(.dark) body {
+            background-color: #f1f5f9 !important;
+            color: #1e293b !important;
         }
 
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
+        /* Text colour overrides for elements that have hardcoded white/slate-light classes */
+        html:not(.dark) .text-slate-100,
+        html:not(.dark) .text-slate-200,
+        html:not(.dark) .text-slate-300,
+        html:not(.dark) h1,
+        html:not(.dark) h2,
+        html:not(.dark) h3 {
+            color: #1e293b !important;
         }
 
-        .header h1 {
-            color: white;
-            font-size: 36px;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        html:not(.dark) .text-slate-400 {
+            color: #475569 !important;
         }
 
-        .header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 18px;
+        html:not(.dark) .text-slate-500 {
+            color: #64748b !important;
         }
 
-        /* Back button */
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 30px;
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px 20px;
-            border-radius: 5px;
+        /* Sidebar changes with theme */
+        aside#sidebar {
             transition: background 0.3s;
         }
 
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+        html.dark aside#sidebar {
+            background: rgba(13, 13, 31, 0.97) !important;
         }
 
-        .back-btn i {
-            margin-right: 8px;
+        html:not(.dark) aside#sidebar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
         }
 
-        /* Cards */
-        .card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s;
+        /* Sidebar link text in light */
+        html:not(.dark) .sidebar-link {
+            color: #475569 !important;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
+        html:not(.dark) .sidebar-link:hover {
+            background: rgba(139, 92, 246, 0.08) !important;
+            color: #6d28d9 !important;
         }
 
-        .card-header {
+        /* Sidebar section label */
+        html:not(.dark) aside#sidebar p.text-slate-400 {
+            color: #94a3b8 !important;
+        }
+
+        /* Mobile header changes with theme */
+        html.dark header.results-mobile-header {
+            background: rgba(6, 6, 15, 0.88) !important;
+            border-bottom-color:
+                rgba(255, 255, 255, 0.08) !important;
+        }
+
+        html:not(.dark) header.results-mobile-header {
+            background: rgba(241, 245, 249, 0.95) !important;
+            border-bottom-color:
+                rgba(0, 0, 0, 0.08) !important;
+        }
+
+        /* ── INTELQUEST: Theme Aware Styles ── */
+        #intelQuestWindow {
+            position: fixed;
+            bottom: 6rem;
+            right: 1.5rem;
+            width: min(380px, calc(100vw - 2rem));
+            height: min(580px, calc(100vh - 10rem));
+            display: flex;
+            flex-direction: column;
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(139, 92, 246, 0.15) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(24px) !important;
+            -webkit-backdrop-filter: blur(24px) !important;
+            z-index: 1000;
+            transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            color: #1e293b;
+        }
+
+        @media (max-width: 640px) {
+            #intelQuestWindow {
+                right: 1rem;
+                bottom: 5.5rem;
+            }
+        }
+
+        #intelQuestWindow.open {
+            transform: scale(1);
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .dark #intelQuestWindow {
+            background: rgba(13, 13, 31, 0.98) !important;
+            border-color: rgba(139, 92, 246, 0.3) !important;
+            color: #e2e8f0;
+        }
+
+        /* Chat Bubbles */
+        .chat-bubble {
+            max-width: 85%;
+            padding: 1rem 1.25rem;
+            border-radius: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-ai {
+            background-color: #f1f5f9 !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #1e293b !important;
+            border-bottom-left-radius: 0.25rem;
+            align-self: flex-start;
+        }
+
+        .dark .chat-ai {
+            background-color: rgba(139, 92, 246, 0.1) !important;
+            border: 1px solid rgba(139, 92, 246, 0.3) !important;
+            color: #e2e8f0 !important;
+        }
+
+        .chat-user {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+            color: #ffffff !important;
+            border-bottom-right-radius: 0.25rem;
+            align-self: flex-end;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+        }
+
+        /* Header Title & Text */
+        #intelQuestWindow h3 {
+            color: #6d28d9 !important;
+        }
+
+        .dark #intelQuestWindow h3 {
+            color: #a78bfa !important;
+        }
+
+        #intelQuestWindow .text-slate-400 {
+            color: #64748b !important;
+        }
+
+        .dark #intelQuestWindow .text-slate-400 {
+            color: #94a3b8 !important;
+        }
+
+        /* Inputs */
+        #intelQuestWindow input {
+            background-color: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #1e293b !important;
+        }
+
+        .dark #intelQuestWindow input {
+            background-color: rgba(15, 23, 42, 0.6) !important;
+            border-color: rgba(51, 65, 85, 0.5) !important;
+            color: white !important;
+        }
+
+        /* Logo Text: Theme Aware Gradient */
+        .logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.3s ease;
+        }
+
+        html.dark .logo-text {
+            background-image: linear-gradient(135deg, #fff, #a78bfa);
+        }
+
+        html:not(.dark) .logo-text {
+            background-image: linear-gradient(135deg, #1e293b, #7c3aed);
+        }
+
+        /* IntelQuest FAB always purple */
+        #intelQuestBtn {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899) !important;
+        }
+
+        /* Orbs: softer in light mode */
+        html:not(.dark) [data-orb] {
+            opacity: 0.06 !important;
+        }
+
+
+        /* Theme toggle button (matches homepage style) */
+        .theme-toggle-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            background: rgba(139, 92, 246, 0.1);
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
+            justify-content: center;
+            cursor: pointer;
+            color: #a78bfa;
+            font-size: 14px;
+            transition: all 0.25s;
+            flex-shrink: 0;
         }
 
-        .card-header i {
-            font-size: 28px;
-            margin-right: 15px;
+        .theme-toggle-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.6);
+            transform: rotate(15deg);
         }
 
-        .card-header h2 {
-            color: #333;
-            font-size: 24px;
-            font-weight: 600;
+        @keyframes orbFloat {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -30px) scale(1.05);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.97);
+            }
         }
 
-        /* Grid layout */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-bottom: 25px;
+        /* Scrollbar dark styling */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
 
-        /* List styling */
-        .list {
-            list-style: none;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
         }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.35);
+            border-radius: 10px;
+        }
+
+        .bg-gradient-mesh {
+            background-image:
+                radial-gradient(at 0% 100%, rgba(139, 92, 246, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.05) 0px, transparent 50%);
+        }
+
+        /* Fallback if Tailwind fails */
+        .glass-fallback {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .sidebar-fallback {
+            min-width: 280px;
+            background: #ffffff;
+            border-right: 1px solid #f1f5f9;
+        }
+
+        /* Chat System Styles (Standard CSS to avoid @apply warnings) */
 
         .list-item {
-            padding: 15px;
-            margin-bottom: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid;
-            transition: all 0.3s;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 1.25rem;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dark .list-item {
+            background: rgba(15, 23, 42, 0.3);
+            border-color: rgba(255, 255, 255, 0.05);
         }
 
         .list-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transform: translateX(8px) scale(1.01);
+            background: rgba(139, 92, 246, 0.08);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: rgba(139, 92, 246, 0.3);
         }
 
-        .list-item i {
-            margin-right: 10px;
-            font-size: 14px;
+        .dark .list-item:hover {
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
-        /* Color coding for different sections */
-        .situation-card {
-            border-top: 4px solid #667eea;
+        /* Risk Heatmap Styles */
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 4px;
+            aspect-ratio: 1;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
         }
 
-        .strong-card .card-header i {
-            color: #28a745;
+        .dark .risk-matrix {
+            background: #0f172a;
+            border-color: #1e293b;
         }
 
-        .strong-card .list-item {
-            border-left-color: #28a745;
-            background: #f0fff4;
+        .risk-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #7c3aed;
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.6);
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .weak-card .card-header i {
-            color: #dc3545;
+        .risk-marker:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            z-index: 20;
         }
 
-        .weak-card .list-item {
-            border-left-color: #dc3545;
-            background: #fff5f5;
+        .risk-label {
+            position: absolute;
+            left: 20px;
+            bottom: -5px;
+            white-space: nowrap;
+            font-size: 10px;
+            font-weight: 700;
+            color: #475569;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        .suggestion-card .card-header i {
-            color: #ffc107;
+        .dark .risk-label {
+            background: rgba(15, 23, 42, 0.9);
+            color: #94a3b8;
         }
 
-        .suggestion-card .list-item {
-            border-left-color: #ffc107;
-            background: #fff9e6;
+        .risk-marker:hover .risk-label {
+            opacity: 1;
         }
 
-        .move-card .card-header i {
-            color: #17a2b8;
+        .matrix-label-y {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: rotate(-90deg) translateX(50%);
+            font-size: 12px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
-        .move-card .list-item {
-            border-left-color: #17a2b8;
-            background: #e6f7ff;
+        .matrix-label-x {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
-        /* Chart container */
-        .chart-container {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        .risk-cell {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px dashed #cbd5e1;
+            border-radius: 0.5rem;
+            position: relative;
         }
 
-        .chart-container h3 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 20px;
+        .dark .risk-cell {
+            background: rgba(30, 41, 59, 0.2);
+            border-color: #334155;
+        }
+
+        .zone-critical {
+            background: linear-gradient(135deg, rgba(244, 63, 94, 0.1) 0%, rgba(244, 63, 94, 0.02) 100%);
+        }
+
+        .zone-high {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.02) 100%);
+        }
+
+        .zone-low {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.02) 100%);
+        }
+
+        /* Tab Content — standard CSS for guaranteed browser compatibility */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transform: translateY(1rem);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* == Sidebar Links == */
+        .sidebar-link {
             display: flex;
             align-items: center;
-        }
-
-        .chart-container h3 i {
-            margin-right: 10px;
-            color: #667eea;
-        }
-
-        canvas {
-            max-height: 400px;
-            width: 100% !important;
-        }
-
-        /* Loading state */
-        .loading {
-            text-align: center;
-            padding: 60px;
-            background: white;
-            border-radius: 15px;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Error state */
-        .error-card {
-            background: white;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .error-card i {
-            font-size: 60px;
-            color: #dc3545;
-            margin-bottom: 20px;
-        }
-
-        .error-card h2 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .error-card p {
-            color: #666;
-            margin-bottom: 25px;
-        }
-
-        .retry-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 5px;
-            font-size: 16px;
+            gap: 1rem;
+            padding: 0.875rem 1.25rem;
+            border-radius: 1.25rem;
+            color: #94a3b8;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            transition: background 0.3s;
+            border: 1px solid transparent;
+            width: 100%;
+            text-align: left;
         }
 
-        .retry-btn:hover {
-            background: #764ba2;
+        .sidebar-link:hover {
+            background: rgba(139, 92, 246, 0.08);
+            color: #a78bfa;
+            border-color: rgba(139, 92, 246, 0.15);
+            transform: translateX(4px);
         }
 
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #999;
+        .dark .sidebar-link:hover {
+            background: rgba(30, 41, 59, 0.5);
+            color: #a78bfa;
         }
 
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            color: #ddd;
+        .sidebar-link.active {
+            background: #7c3aed;
+            color: #ffffff;
+            box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);
+            border-color: #7c3aed;
         }
 
-        @media (max-width: 768px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-
-            .container {
-                padding: 20px 10px;
-            }
-
-            .card-header h2 {
-                font-size: 20px;
-            }
+        .dark .sidebar-link.active {
+            background: #8b5cf6;
+            box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.4);
         }
 
-        /* Print Styles */
+        /* == Stat Cards == */
+        .stat-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .dark .stat-card {
+            background: rgba(15, 23, 42, 0.7);
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ====================================================
+    PRINT / PDF STYLESHEET — Professional Business Report
+    ==================================================== */
         @media print {
-            body {
-                background: white !important;
-                padding: 0 !important;
-            }
 
-            .back-btn,
-            .actions,
-            .chart-container,
-            .header p {
+            /* == 1. HIDE ALL UI CHROME == */
+            header,
+            aside,
+            #sidebar,
+            #sidebarOverlay,
+            #intelQuestBtn,
+            #intelQuestWindow,
+            #exportSlidesBtn,
+            #dashboardHeader,
+            #data,
+            .print-hidden,
+            nav,
+            [data-tab],
+            canvas,
+            .risk-matrix,
+            #wordCloudContainer {
                 display: none !important;
             }
 
-            .container {
-                max-width: 100% !important;
-                margin: 0 !important;
+            /* == 2. PAGE LAYOUT — Always white, regardless of dark/light mode == */
+            html,
+            html.dark,
+            html:not(.dark),
+            body,
+            html.dark body,
+            html:not(.dark) body {
+                background: #ffffff !important;
+                background-color: #ffffff !important;
+                color: #1a202c !important;
+                color-scheme: light !important;
+                font-family: 'Georgia', 'Times New Roman', serif;
+                font-size: 10.5pt;
+                line-height: 1.7;
+                overflow: visible !important;
+                height: auto !important;
+                width: 100% !important;
+            }
+
+            /* Override Tailwind bg-[#06060f] on body */
+            body.bg-\[\#06060f\] {
+                background-color: #ffffff !important;
+            }
+
+            /* Force all dark-mode background colours to white */
+            .dark\:bg-slate-900\/70,
+            .dark\:bg-slate-900,
+            .dark\:bg-slate-800,
+            .dark\:bg-slate-950,
+            .dark\:bg-emerald-950\/40,
+            .dark\:bg-rose-950\/40,
+            .dark\:bg-sky-950\/40,
+            .dark\:bg-amber-950\/40,
+            [class*="dark:bg-"] {
+                background: transparent !important;
+                background-color: transparent !important;
+            }
+
+            /* Force all dark-mode text to be dark */
+            [class*="dark:text-"] {
+                color: inherit !important;
+            }
+
+            main {
+                margin-left: 0 !important;
                 padding: 0 !important;
+                overflow: visible !important;
+                height: auto !important;
             }
 
-            .card {
+            @page {
+                margin: 2cm 2.5cm;
+                size: A4;
+            }
+
+            /* == 3. REVEAL ALL TAB CONTENT FOR PRINT == */
+            .tab-content {
+                display: block !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+
+            /* == 4. SHOW PRINT-ONLY SECTIONS == */
+            .print-only {
+                display: block !important;
+            }
+
+            /* == 5. PAGE BREAKS — Every major section starts on a new page == */
+
+            /* SWOT tab starts a new page */
+            #swot {
+                page-break-before: always;
+            }
+
+            /* Each SWOT quadrant starts on its own page */
+            #swot-weaknesses,
+            #swot-opportunities,
+            #swot-threats {
+                page-break-before: always;
+            }
+
+            /* Strategy tab starts a new page */
+            #strategy {
+                page-break-before: always;
+            }
+
+            /* Each strategy section starts its own page */
+            #strategy-suggestions,
+            #strategy-roadmap {
+                page-break-before: always;
+            }
+
+            /* Prevent headings from being orphaned at bottom of page */
+            h2,
+            h3 {
+                page-break-after: avoid;
+            }
+
+            /* == 6. CLEAN UP GLASSMORPHISM == */
+            * {
+                background: transparent !important;
+                backdrop-filter: none !important;
                 box-shadow: none !important;
-                border: 1px solid #ddd !important;
-                break-inside: avoid;
+                border-color: #e2e8f0 !important;
+                border-radius: 0 !important;
+                transition: none !important;
+                animation: none !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
 
-            .header h1 {
-                color: black !important;
-                text-shadow: none !important;
-                margin-bottom: 20px !important;
-            }
-
-            .grid-2 {
-                grid-template-columns: 1fr 1fr !important;
-                gap: 15px !important;
-            }
-
+            /* == 7. CARD STYLES — clean bordered cards for print == */
             .list-item {
+                border: 1px solid #cbd5e0 !important;
+                border-left: 4px solid #7c3aed !important;
+                padding: 0.6rem 0.75rem !important;
+                margin-bottom: 0.5rem !important;
+                background: #fafafa !important;
+            }
+
+            #overview .list-item,
+            #takeawaysList .list-item {
+                border-left-color: #7c3aed !important;
+            }
+
+            /* == 8. SECTION HEADINGS == */
+            h1,
+            h2,
+            h3,
+            h4 {
+                color: #1a202c !important;
+                font-weight: 700;
+                page-break-after: avoid;
+            }
+
+            h2 {
+                font-size: 15pt;
+                border-bottom: 2px solid #1a202c;
+                padding-bottom: 0.35rem;
+                margin-top: 2rem;
+                margin-bottom: 0.75rem;
+            }
+
+            h3 {
+                font-size: 12pt;
+                margin-top: 1.25rem;
+                margin-bottom: 0.5rem;
+                color: #4a5568 !important;
+            }
+
+            /* == 9. PRINT HEADER == */
+            .print-only {
+                border-bottom: 2px solid #1a202c;
+                padding-bottom: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            #printTitle {
+                font-size: 22pt !important;
+                font-weight: 900;
+                color: #1a202c !important;
+            }
+
+            #printMeta {
+                font-size: 9pt;
+                color: #718096 !important;
+                margin-top: 0.5rem;
+            }
+
+            /* == 10. SWOT SECTION — stacked full-width blocks == */
+            #swot .grid {
+                display: block !important;
+            }
+
+            #swot .grid>div {
+                border: 1px solid #e2e8f0 !important;
+                border-left-width: 4px !important;
+                padding: 1rem !important;
+                margin-bottom: 1.25rem !important;
+                page-break-inside: avoid;
+            }
+
+            /* SWOT color coding */
+            #swot .grid>div:nth-child(1) {
+                border-left-color: #10b981 !important;
+            }
+
+            /* Strengths */
+            #swot .grid>div:nth-child(2) {
+                border-left-color: #f43f5e !important;
+            }
+
+            /* Weaknesses */
+            #swot .grid>div:nth-child(3) {
+                border-left-color: #0ea5e9 !important;
+            }
+
+            /* Opportunities */
+            #swot .grid>div:nth-child(4) {
+                border-left-color: #f59e0b !important;
+            }
+
+            /* Threats */
+
+            #swot .grid>div h2 {
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 0 0.5rem !important;
+                font-size: 13pt;
+            }
+
+            /* == 11. STRATEGY SECTION == */
+            #strategy .grid {
+                display: block !important;
+            }
+
+            #movesList>div {
+                border: 1px solid #e2e8f0 !important;
+                border-left: 4px solid #7c3aed !important;
+                padding: 0.75rem 1rem !important;
+                margin-bottom: 0.75rem !important;
+                page-break-inside: avoid;
+            }
+
+            /* == 12. KPI TILES: hide decorative tiles == */
+            .grid.grid-cols-2 {
+                display: none !important;
+            }
+
+            /* == 13. RISK CARDS LIST == */
+            #riskDetailCards {
+                display: block !important;
+            }
+
+            #riskDetailCards>div {
+                border: 1px solid #e2e8f0 !important;
+                border-left: 4px solid #f43f5e !important;
+                padding: 0.5rem 0.75rem !important;
+                margin-bottom: 0.5rem !important;
+                page-break-inside: avoid;
+            }
+
+            /* == 14. COMPARISON BANNER == */
+            #comparisonBanner {
+                border: 1px solid #c4b5fd !important;
+                border-left: 4px solid #7c3aed !important;
+                padding: 0.75rem 1rem !important;
+                margin-bottom: 1.25rem !important;
+            }
+
+            #comparisonBanner.hidden {
+                display: none !important;
+            }
+
+            /* == 15. PRINT FOOTER == */
+            .print-footer {
+                display: block !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 8pt;
+                color: #718096;
+                border-top: 1px solid #e2e8f0;
+                padding: 0.4rem 0;
                 background: white !important;
-                border: 1px solid #eee !important;
             }
         }
     </style>
+
+    <style type="text/tailwindcss">
+        /* Nothing — tab-content is handled in the standard CSS block above */
+    </style>
+
 </head>
 
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>📊 Analysis Results</h1>
-            <p>AI-powered insights from your business report</p>
+<body class="bg-[#06060f] text-slate-100 h-screen flex overflow-hidden">
+
+    <!-- Ambient Background (matches homepage) -->
+    <div aria-hidden="true" style="position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;" data-orb>
+        <div
+            style="position:absolute;width:min(600px,80vw);height:min(600px,80vw);border-radius:50%;filter:blur(80px);opacity:0.12;background:radial-gradient(circle,#7c3aed,transparent 70%);top:-15%;left:-8%;animation:orbFloat 12s ease-in-out infinite;">
+        </div>
+        <div
+            style="position:absolute;width:min(500px,70vw);height:min(500px,70vw);border-radius:50%;filter:blur(80px);opacity:0.09;background:radial-gradient(circle,#ec4899,transparent 70%);top:0;right:-8%;animation:orbFloat 12s ease-in-out infinite;animation-delay:-6s;">
+        </div>
+        <div
+            style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px);background-size:60px 60px;">
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Bar -->
+    <header
+        class="results-mobile-header lg:hidden fixed top-0 left-0 right-0 h-16 backdrop-blur-xl z-40 px-6 flex items-center justify-between"
+        style="border-bottom:1px solid transparent;transition:background 0.3s;">
+        <div class="flex items-center gap-3">
+            <div
+                style="width:32px;height:32px;background:linear-gradient(135deg,#8b5cf6,#ec4899);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;flex-shrink:0;">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <span class="logo-text text-[17px]">AI Market Analyst</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="theme-toggle-btn" id="themeToggleMobile" aria-label="Toggle theme" title="Toggle theme">
+                <i class="fas fa-moon" id="mobileIconMoon"></i>
+                <i class="fas fa-sun" id="mobileIconSun" style="display:none;"></i>
+            </button>
+            <button id="mobileMenuBtn" class="p-2 text-slate-400 hover:text-white transition-colors">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden lg:hidden"></div>
+
+    <!-- Sidebar -->
+    <aside
+        class="fixed top-16 lg:top-0 left-0 bottom-0 w-72 backdrop-blur-xl z-50 transition-transform duration-500 lg:translate-x-0 -translate-x-full p-6 flex flex-col gap-8"
+        id="sidebar" style="background:rgba(13,13,31,0.97);border-right:1px solid rgba(255,255,255,0.08);">
+        <div class="hidden lg:flex items-center gap-3 px-2">
+            <div
+                style="width:36px;height:36px;background:linear-gradient(135deg,#8b5cf6,#ec4899);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;flex-shrink:0;">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <span class="logo-text text-[18px]">AI Market Analyst</span>
         </div>
 
-        <a href="/" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Analyze Another Report
-        </a>
+        <nav class="flex-1 space-y-2">
+            <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">View Analysis</p>
+            <button class="sidebar-link active w-full" data-tab="overview">
+                <i class="fas fa-th-large"></i>
+                <span class="font-medium">Overview</span>
+            </button>
+            <button class="sidebar-link w-full" data-tab="swot">
+                <i class="fas fa-bolt"></i>
+                <span class="font-medium">SWOT Insights</span>
+            </button>
+            <button class="sidebar-link w-full" data-tab="strategy">
+                <i class="fas fa-rocket"></i>
+                <span class="font-medium">Strategic Roadmap</span>
+            </button>
+            <button class="sidebar-link w-full" data-tab="data">
+                <i class="fas fa-database"></i>
+                <span class="font-medium">Data & Export</span>
+            </button>
+        </nav>
 
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <p>Loading your analysis results...</p>
+        <!-- Bottom Controls -->
+        <div class="pt-6" style="border-top:1px solid rgba(255,255,255,0.08);">
+            <a href="/" class="sidebar-link w-full" style="color:#ef4444;"
+                onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background=''">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="font-medium">Analyze New File</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:ml-72 h-screen overflow-y-auto custom-scrollbar relative z-10">
+        <div class="p-6 md:p-10 pb-24 max-w-7xl mx-auto">
+
+            <!-- Print-Only Report Header (hidden in browser, visible in print) -->
+            <div class="print-only"
+                style="display:none; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #111827;">
+                <div style="font-size: 20pt; font-weight: bold; color: #111827; margin-bottom: 0.25rem;"
+                    id="printTitle">AI Market Analysis Report</div>
+                <div style="font-size: 10pt; color: #6b7280;" id="printMeta"></div>
+            </div>
+
+            <!-- Welcome Header -->
+            <div id="dashboardHeader"
+                class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 print-hidden">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2"
+                        style="font-family:'Space Grotesk',sans-serif;">Analysis Dashboard</h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-lg">Detailed report processing completed. Here are
+                        your insights.</p>
+                </div>
+                <div class="flex items-center gap-3 print-hidden">
+                    <!-- Theme toggle — consistent with homepage navbar position -->
+                    <button class="theme-toggle-btn hidden lg:flex" id="themeToggle" aria-label="Toggle theme"
+                        title="Toggle theme">
+                        <i class="fas fa-moon" id="themeIconMoon"></i>
+                        <i class="fas fa-sun" id="themeIconSun" style="display:none;"></i>
+                    </button>
+                    <button onclick="exportToPdf()"
+                        class="px-4 py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl rounded-2xl hover:bg-white dark:hover:bg-slate-800 transition-all flex items-center gap-2 group"
+                        title="Print / Save as PDF">
+                        <i class="fas fa-file-pdf text-red-500 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300">PDF</span>
+                    </button>
+                    <button id="exportSlidesBtn"
+                        class="px-4 py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl rounded-2xl hover:bg-primary-600 dark:hover:bg-primary-600 hover:text-white transition-all text-emerald-600 dark:text-emerald-400 flex items-center gap-2 group"
+                        title="Export to PowerPoint" onclick="exportSlides()">
+                        <i class="fas fa-file-powerpoint group-hover:scale-110 transition-transform"></i>
+                        <span
+                            class="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-white">PPTX</span>
+                    </button>
+                    <button onclick="downloadJson()"
+                        class="px-4 py-2.5 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl rounded-2xl hover:bg-white dark:hover:bg-slate-800 transition-all text-primary-600 flex items-center gap-2 group"
+                        title="Download JSON">
+                        <i class="fas fa-code group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300">JSON</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Content Tabs -->
+            <div class="space-y-8">
+
+                <!-- Tab: Overview -->
+                <div id="overview" class="tab-content active space-y-8">
+                    <!-- Comparison Summary -->
+                    <div id="comparisonBanner" class="hidden animate-in slide-in-from-top duration-700">
+                        <div
+                            class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl p-6 rounded-3xl border-primary-500/20 bg-primary-500/5 flex flex-col gap-5">
+                            <div class="flex items-start gap-5">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-primary-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-primary-500/30">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-black text-xs uppercase tracking-widest text-primary-600 mb-1">
+                                        Comparative Insights</h3>
+                                    <p id="comparisonSummaryText"
+                                        class="text-slate-700 dark:text-slate-300 leading-relaxed font-medium italic">
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Strategic Delta Section -->
+                            <div id="comparisonDeltaContainer" class="hidden mt-4 pt-4 border-t border-primary-500/10">
+                                <h4
+                                    class="text-sm font-bold text-primary-700 dark:text-primary-400 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-chart-line text-xs"></i>
+                                    Strategic Delta (Key Shifts)
+                                </h4>
+                                <ul id="comparisonDeltaList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <!-- Delta items injected here -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- KPI Summary Cards -->
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                        <div onclick="navigateToSection('swot', 'strongPointsList')"
+                            class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl p-5 rounded-3xl flex flex-col gap-3 hover:scale-[1.04] transition-transform duration-300 cursor-pointer group">
+                            <div
+                                class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                                <i class="fas fa-arrow-up text-emerald-600 group-hover:text-white"></i>
+                            </div>
+                            <div class="w-8 h-1.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></div>
+                            <span id="kpi-strengths" class="text-3xl font-black text-emerald-600">—</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Strengths</span>
+                        </div>
+                        <div onclick="navigateToSection('swot', 'weakPointsList')"
+                            class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl p-5 rounded-3xl flex flex-col gap-3 hover:scale-[1.04] transition-transform duration-300 cursor-pointer group">
+                            <div
+                                class="w-10 h-10 rounded-2xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-colors">
+                                <i class="fas fa-arrow-down text-rose-500 group-hover:text-white"></i>
+                            </div>
+                            <div class="w-8 h-1.5 rounded-full bg-rose-500 shadow-sm shadow-rose-500/50"></div>
+                            <span id="kpi-weaknesses" class="text-3xl font-black text-rose-500">—</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Weaknesses</span>
+                        </div>
+                        <div onclick="navigateToSection('strategy', 'suggestionsList')"
+                            class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl p-5 rounded-3xl flex flex-col gap-3 hover:scale-[1.04] transition-transform duration-300 cursor-pointer group">
+                            <div
+                                class="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                                <i class="fas fa-lightbulb text-amber-500 group-hover:text-white"></i>
+                            </div>
+                            <div class="w-8 h-1.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50"></div>
+                            <span id="kpi-suggestions" class="text-3xl font-black text-amber-500">—</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Suggestions</span>
+                        </div>
+                        <div onclick="navigateToSection('strategy', 'movesList')"
+                            class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl p-5 rounded-3xl flex flex-col gap-3 hover:scale-[1.04] transition-transform duration-300 cursor-pointer group">
+                            <div
+                                class="w-10 h-10 rounded-2xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center group-hover:bg-primary-500 group-hover:text-white transition-colors">
+                                <i class="fas fa-rocket text-primary-500 group-hover:text-white"></i>
+                            </div>
+                            <div class="w-8 h-1.5 rounded-full bg-primary-500 shadow-sm shadow-primary-500/50"></div>
+                            <span id="kpi-moves" class="text-3xl font-black text-primary-500">—</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Moves</span>
+                        </div>
+                        <div onclick="navigateToSection('strategy', 'riskMatrix')"
+                            class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl p-5 rounded-3xl flex flex-col gap-3 hover:scale-[1.04] transition-transform duration-300 cursor-pointer group">
+                            <div
+                                class="w-10 h-10 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-colors">
+                                <i class="fas fa-shield-alt text-red-500 group-hover:text-white"></i>
+                            </div>
+                            <div class="w-8 h-1.5 rounded-full bg-red-500 shadow-sm shadow-red-500/50"></div>
+                            <span id="kpi-risks" class="text-3xl font-black text-red-500">—</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Risks</span>
+                        </div>
+                    </div>
+
+                    <!-- Executive Brief -->
+                    <div
+                        class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl p-8 rounded-3xl hover:scale-[1.01] transition-transform duration-300 print-section">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div
+                                class="w-10 h-10 rounded-2xl bg-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">Executive Brief</h3>
+                                <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Current Business
+                                    Situation</p>
+                            </div>
+                        </div>
+                        <p id="situationText"
+                            class="text-slate-600 dark:text-slate-300 leading-relaxed text-base border-l-4 border-primary-500 pl-6 italic">
+                            Loading analysis...</p>
+                    </div>
+
+
+                    <!-- Key Takeaways -->
+                    <div class="print-section">
+                        <h3 class="text-xl font-bold mb-6 flex items-center gap-3">
+                            <i class="fas fa-lightbulb text-primary-500 print-hidden"></i>
+                            Key Strategic Takeaways
+                        </h3>
+                        <div id="takeawaysList" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                            <!-- Takeaways injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: SWOT Insights -->
+                <div id="swot" class="tab-content print-section">
+                    <h2 class="hidden print:block text-xl font-black mb-6">SWOT Analysis</h2>
+                    <!-- SWOT 2x2 Matrix -->
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-1 rounded-3xl overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-800">
+                        <!-- Strengths -->
+                        <div id="swot-strengths"
+                            class="bg-emerald-50 dark:bg-emerald-950/40 p-8 border-b md:border-b-0 md:border-r border-emerald-100 dark:border-emerald-900/50">
+                            <div class="flex items-center gap-3 mb-5">
+                                <div
+                                    class="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center font-black text-sm shadow-lg shadow-emerald-500/30">
+                                    S</div>
+                                <div>
+                                    <h2 class="text-lg font-black text-emerald-700 dark:text-emerald-400">Strengths</h2>
+                                    <p class="text-xs text-emerald-600/60 dark:text-emerald-500/60">Internal advantages
+                                    </p>
+                                </div>
+                            </div>
+                            <div id="strongPointsList" class="space-y-3"></div>
+                        </div>
+                        <!-- Weaknesses -->
+                        <div id="swot-weaknesses" class="bg-rose-50 dark:bg-rose-950/40 p-8">
+                            <div class="flex items-center gap-3 mb-5">
+                                <div
+                                    class="w-10 h-10 rounded-2xl bg-rose-500 text-white flex items-center justify-center font-black text-sm shadow-lg shadow-rose-500/30">
+                                    W</div>
+                                <div>
+                                    <h2 class="text-lg font-black text-rose-700 dark:text-rose-400">Weaknesses</h2>
+                                    <p class="text-xs text-rose-600/60 dark:text-rose-500/60">Internal limitations</p>
+                                </div>
+                            </div>
+                            <div id="weakPointsList" class="space-y-3"></div>
+                        </div>
+                        <!-- Opportunities (Suggestions) -->
+                        <div id="swot-opportunities"
+                            class="bg-sky-50 dark:bg-sky-950/40 p-8 border-t md:border-t-0 md:border-r border-sky-100 dark:border-sky-900/50">
+                            <div class="flex items-center gap-3 mb-5">
+                                <div
+                                    class="w-10 h-10 rounded-2xl bg-sky-500 text-white flex items-center justify-center font-black text-sm shadow-lg shadow-sky-500/30">
+                                    O</div>
+                                <div>
+                                    <h2 class="text-lg font-black text-sky-700 dark:text-sky-400">Opportunities</h2>
+                                    <p class="text-xs text-sky-600/60 dark:text-sky-500/60">Smart suggestions to act on
+                                    </p>
+                                </div>
+                            </div>
+                            <div id="opportunitiesList" class="space-y-3"></div>
+                        </div>
+                        <!-- Threats (Risks) -->
+                        <div id="swot-threats"
+                            class="bg-amber-50 dark:bg-amber-950/40 p-8 border-t border-amber-100 dark:border-amber-900/50">
+                            <div class="flex items-center gap-3 mb-5">
+                                <div
+                                    class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-black text-sm shadow-lg shadow-amber-500/30">
+                                    T</div>
+                                <div>
+                                    <h2 class="text-lg font-black text-amber-700 dark:text-amber-400">Threats</h2>
+                                    <p class="text-xs text-amber-600/60 dark:text-amber-500/60">Strategic risks
+                                        identified</p>
+                                </div>
+                            </div>
+                            <div id="threatsList" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Strategy -->
+                <div id="strategy" class="tab-content space-y-10">
+
+                    <!-- Risk Heatmap -->
+                    <div id="strategy-risks"
+                        class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl p-8 rounded-3xl print-section">
+                        <h2 class="text-xl font-black mb-1 flex items-center gap-3"><i
+                                class="fas fa-exclamation-triangle text-amber-500"></i> Strategic Risk Matrix</h2>
+                        <p class="text-sm text-slate-400 mb-8">Each risk plotted by Impact vs. Likelihood. Top-right =
+                            most critical.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="flex items-center justify-center">
+                                <div class="risk-matrix" id="riskMatrix">
+                                    <div class="matrix-label-y">Impact</div>
+                                    <div class="matrix-label-x">Likelihood</div>
+                                    <div class="risk-cell zone-low"></div>
+                                    <div class="risk-cell zone-low"></div>
+                                    <div class="risk-cell"></div>
+                                    <div class="risk-cell"></div>
+                                    <div class="risk-cell"></div>
+                                    <div class="risk-cell zone-low"></div>
+                                    <div class="risk-cell"></div>
+                                    <div class="risk-cell"></div>
+                                    <div class="risk-cell zone-high"></div>
+                                    <div class="risk-cell zone-high"></div>
+                                    <div class="risk-cell"></div>
+                                    <div class="risk-cell"></div>
+                                    <div class="risk-cell zone-high"></div>
+                                    <div class="risk-cell zone-high"></div>
+                                    <div class="risk-cell zone-critical"></div>
+                                    <div class="risk-cell"></div>
+                                    <div class="risk-cell zone-high"></div>
+                                    <div class="risk-cell zone-high"></div>
+                                    <div class="risk-cell zone-critical"></div>
+                                    <div class="risk-cell zone-critical"></div>
+                                    <div class="risk-cell"></div>
+                                    <div class="risk-cell zone-high"></div>
+                                    <div class="risk-cell zone-critical"></div>
+                                    <div class="risk-cell zone-critical"></div>
+                                    <div class="risk-cell zone-critical"></div>
+                                    <div id="riskMarkersContainer"></div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 gap-3" id="riskDetailCards">
+                                <p class="text-slate-400 italic text-sm p-4">Analyze a report to view risks.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Smart Suggestions -->
+                    <div id="strategy-suggestions"
+                        class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl p-8 rounded-3xl print-section">
+                        <h2 class="text-xl font-black mb-1 flex items-center gap-3"><i
+                                class="fas fa-lightbulb text-amber-400"></i> Actionable Suggestions</h2>
+                        <p class="text-sm text-slate-400 mb-8">Key improvements identified from the report analysis</p>
+                        <div id="suggestionsList" class="grid gap-4"></div>
+                    </div>
+
+                    <!-- Strategic Moves Timeline -->
+                    <div id="strategy-roadmap"
+                        class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-700/30 shadow-xl p-8 rounded-3xl print-section">
+                        <h2 class="text-xl font-black mb-1 flex items-center gap-3"><i
+                                class="fas fa-road text-primary-500"></i> Strategic Roadmap</h2>
+                        <p class="text-sm text-slate-400 mb-8">Prioritized next moves in order of recommended execution
+                        </p>
+                        <div id="movesList"
+                            class="space-y-6 relative before:absolute before:left-6 before:top-4 before:bottom-4 before:w-0.5 before:bg-primary-100 dark:before:bg-primary-900/30">
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Tab: Data -->
+                <div id="data" class="tab-content space-y-8 print-hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-2 glass overflow-hidden flex flex-col rounded-3xl min-h-[500px]">
+                            <div
+                                class="p-6 border-b flex items-center justify-between bg-white/50 dark:bg-slate-800/50">
+                                <span class="font-bold">Raw Analysis Response (JSON)</span>
+                                <button onclick="copyRawJson()"
+                                    class="text-sm text-primary-600 font-bold hover:underline">Copy All</button>
+                            </div>
+                            <pre id="rawJsonBody"
+                                class="flex-1 p-6 text-xs overflow-auto font-mono text-slate-500 dark:text-slate-400 custom-scrollbar"></pre>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="stat-card">
+                                <h3 class="font-bold mb-4">Export Assets</h3>
+                                <div class="space-y-3">
+                                    <button onclick="exportToPdf()"
+                                        class="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 transition-all">
+                                        <i class="fas fa-file-pdf text-red-500"></i>
+                                        <span class="text-sm font-semibold">Download as PDF</span>
+                                    </button>
+                                    <button onclick="downloadJson()"
+                                        class="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-700 transition-all">
+                                        <i class="fas fa-code text-primary-500"></i>
+                                        <span class="text-sm font-semibold">Download JSON</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="stat-card bg-primary-600 text-white shadow-primary-500/30">
+                                <h3 class="font-bold mb-2">Need a refresh?</h3>
+                                <p class="text-xs opacity-80 mb-4">You can re-analyze your document or start fresh with
+                                    a new one.</p>
+                                <a href="/"
+                                    class="block text-center py-3 rounded-xl bg-white/20 font-bold text-sm backdrop-blur-sm hover:bg-white/30 transition-all">
+                                    Upload New PDF
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Print Footer -->
+            <div id="printFooter" class="print-footer" style="display:none;">
+                AI Market Analyst Pro | Strategic Report
+            </div>
+        </div>
+    </main>
+
+    <!-- IntelQuest Chat -->
+    <button id="intelQuestBtn"
+        class="fixed bottom-6 right-6 w-14 h-14 text-white rounded-full flex items-center justify-center text-xl hover:scale-110 active:scale-95 transition-all z-[101]"
+        style="background:linear-gradient(135deg,#8b5cf6,#ec4899);box-shadow:0 0 28px rgba(139,92,246,0.45);">
+        <i class="fas fa-comment-alt"></i>
+    </button>
+
+    <div id="intelQuestWindow">
+
+        <div class="p-6 border-b border-primary-500/10 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/40 text-primary-600 flex items-center justify-center">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h3 class="font-black text-sm uppercase tracking-widest text-primary-600">IntelQuest</h3>
+                    <p class="text-[10px] font-bold text-slate-400">Ask anything about the report</p>
+                </div>
+            </div>
+            <button id="closeChat" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
 
-        <div id="error" style="display: none;">
-            <!-- Error content will be populated by JavaScript -->
+        <div id="chatMessages" class="flex-1 overflow-y-auto p-6 space-y-4 flex flex-col custom-scrollbar">
+            <div class="chat-bubble chat-ai animate-in fade-in slide-in-from-bottom duration-500">
+                Hi! I've analyzed your report(s). Ask me any specific follow-up questions you have!
+            </div>
         </div>
 
-        <div id="results" style="display: none;">
-            <!-- Current Situation Card -->
-            <div class="card situation-card" id="situationCard">
-                <div class="card-header">
-                    <i class="fas fa-chart-line"></i>
-                    <h2>Current Business Situation</h2>
-                </div>
-                <div class="card-body">
-                    <p id="situation" style="font-size: 18px; line-height: 1.6; color: #555;"></p>
-                </div>
-            </div>
-
-            <!-- Grid for Strong and Weak Points -->
-            <div class="grid-2">
-                <!-- Strong Points -->
-                <div class="card strong-card">
-                    <div class="card-header">
-                        <i class="fas fa-check-circle"></i>
-                        <h2>Strong Points</h2>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list" id="strongList"></ul>
-                    </div>
-                </div>
-
-                <!-- Weak Points -->
-                <div class="card weak-card">
-                    <div class="card-header">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h2>Weak Points</h2>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list" id="weakList"></ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Grid for Suggestions and Moves -->
-            <div class="grid-2">
-                <!-- Smart Suggestions -->
-                <div class="card suggestion-card">
-                    <div class="card-header">
-                        <i class="fas fa-lightbulb"></i>
-                        <h2>Smart Suggestions</h2>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list" id="suggestionsList"></ul>
-                    </div>
-                </div>
-
-                <!-- Next Strategic Moves -->
-                <div class="card move-card">
-                    <div class="card-header">
-                        <i class="fas fa-rocket"></i>
-                        <h2>Next Strategic Moves</h2>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list" id="movesList"></ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chart Section -->
-            <div class="chart-container">
-                <h3>
-                    <i class="fas fa-chart-bar"></i>
-                    Insights Overview
-                </h3>
-                <canvas id="insightsChart"></canvas>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="actions" style="display: flex; justify-content: center; gap: 15px; margin-top: 30px;">
-                <button onclick="window.print()" class="retry-btn" style="background: #28a745;">
-                    <i class="fas fa-print"></i> Download PDF
-                </button>
-                <button onclick="copyRawJson()" class="retry-btn" style="background: #17a2b8;">
-                    <i class="fas fa-copy"></i> Copy JSON
+        <div class="p-6 border-t border-primary-500/10 bg-slate-50/50 dark:bg-slate-900/50 rounded-b-[2.5rem]">
+            <div class="relative">
+                <input type="text" id="chatInput" placeholder="How can we grow market share?"
+                    class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl py-3 pl-4 pr-12 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all dark:text-white">
+                <button id="sendChat"
+                    class="absolute right-2 top-1.5 w-9 h-9 bg-primary-600 text-white rounded-xl flex items-center justify-center hover:bg-primary-700 transition-colors">
+                    <i class="fas fa-paper-plane text-xs"></i>
                 </button>
             </div>
         </div>
     </div>
 
+
+
     <script>
-        // Get data from sessionStorage (saved from previous page)
-        const resultsData = sessionStorage.getItem('analysisResults');
+        // DOM & Tab Logic
+        const tabLinks = document.querySelectorAll('[data-tab]');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
 
-        // DOM elements
-        const loadingDiv = document.getElementById('loading');
-        const errorDiv = document.getElementById('error');
-        const resultsDiv = document.getElementById('results');
-        const situationP = document.getElementById('situation');
-        const strongList = document.getElementById('strongList');
-        const weakList = document.getElementById('weakList');
-        const suggestionsList = document.getElementById('suggestionsList');
-        const movesList = document.getElementById('movesList');
+        // Tab Switching
+        tabLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const target = link.dataset.tab;
 
-        let insightsChart = null;
+                tabLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
 
-        // Check if we have data
-        if (!resultsData) {
-            // No data found - show error
-            showError('No analysis data found. Please upload a PDF first.');
-        } else {
-            try {
-                const data = JSON.parse(resultsData);
-                displayResults(data);
-            } catch (e) {
-                showError('Invalid data format. Please try again.');
-            }
-        }
-
-        function displayResults(data) {
-            // Hide loading, show results
-            loadingDiv.style.display = 'none';
-            resultsDiv.style.display = 'block';
-
-            // Current situation
-            situationP.textContent = data.current_business_situation || 'No situation data available';
-
-            // Render lists with helper
-            renderList(strongList, data.strong_points, 'fa-check-circle', '#28a745');
-            renderList(weakList, data.weak_points, 'fa-exclamation-circle', '#dc3545');
-            renderList(suggestionsList, data.smart_suggestions, 'fa-lightbulb', '#ffc107');
-            renderList(movesList, data.next_strategic_moves, 'fa-arrow-right', '#17a2b8');
-
-            // Create chart
-            createChart(data);
-
-            // Save to history
-            saveToHistory(data);
-        }
-
-        function renderList(container, items, icon, color) {
-            container.innerHTML = '';
-            if (items && items.length > 0) {
-                items.forEach(item => {
-                    const li = document.createElement('li');
-                    li.className = 'list-item';
-                    li.innerHTML = `<i class="fas ${icon}" style="color: ${color};"></i>${item}`;
-                    container.appendChild(li);
-                });
-            } else {
-                container.innerHTML = '<li class="empty-state"><i class="fas fa-info-circle"></i>No insights available</li>';
-            }
-        }
-
-        function createChart(data) {
-            const ctx = document.getElementById('insightsChart').getContext('2d');
-
-            // Destroy existing chart if any
-            if (insightsChart) {
-                insightsChart.destroy();
-            }
-
-            // Prepare data
-            const labels = ['Strong Points', 'Weak Points', 'Suggestions', 'Strategic Moves'];
-            const values = [
-                data.strong_points ? data.strong_points.length : 0,
-                data.weak_points ? data.weak_points.length : 0,
-                data.smart_suggestions ? data.smart_suggestions.length : 0,
-                data.next_strategic_moves ? data.next_strategic_moves.length : 0
-            ];
-
-            // Create chart
-            insightsChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Number of Insights',
-                        data: values,
-                        backgroundColor: [
-                            'rgba(40, 167, 69, 0.7)',
-                            'rgba(220, 53, 69, 0.7)',
-                            'rgba(255, 193, 7, 0.7)',
-                            'rgba(23, 162, 184, 0.7)'
-                        ],
-                        borderColor: [
-                            'rgb(40, 167, 69)',
-                            'rgb(220, 53, 69)',
-                            'rgb(255, 193, 7)',
-                            'rgb(23, 162, 184)'
-                        ],
-                        borderWidth: 2,
-                        borderRadius: 5,
-                        barPercentage: 0.6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    return `${context.raw} insight${context.raw !== 1 ? 's' : ''}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,
-                                callback: function (value) {
-                                    return value.toFixed(0);
-                                }
-                            }
-                        }
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === target) {
+                        setTimeout(() => content.classList.add('active'), 50);
                     }
+                });
+
+                // Re-render components that might need layout refresh
+                if (target === 'strategy') {
+                    setTimeout(renderHeatmap, 200);
                 }
+
+                // Close mobile menu
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            });
+        });
+
+        // Mobile Menu
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+        overlay.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // Theme Management — uses Tailwind 'dark' class system; reads same localStorage key as homepage
+        const themeToggle = document.getElementById('themeToggle');
+        const themeToggleMobile = document.getElementById('themeToggleMobile');
+
+        // ── THEME ENGINE — Default: Dark ──
+        function syncThemeIcons(isDark) {
+            ['themeIconMoon', 'mobileIconMoon'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = isDark ? 'inline' : 'none';
+            });
+            ['themeIconSun', 'mobileIconSun'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = isDark ? 'none' : 'inline';
             });
         }
 
-        function saveToHistory(data) {
-            const history = JSON.parse(localStorage.getItem('analysisHistory') || '[]');
-            const exists = history.some(h => h.current_business_situation === data.current_business_situation);
-            if (!exists) {
-                const historyItem = {
-                    ...data,
-                    timestamp: new Date().toISOString(),
-                    id: Date.now()
-                };
-                history.unshift(historyItem);
-                localStorage.setItem('analysisHistory', JSON.stringify(history.slice(0, 5)));
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
             }
+            syncThemeIcons(isDark);
         }
 
-        async function copyRawJson() {
-            const resultsData = sessionStorage.getItem('analysisResults');
+        // Default to dark on load, but respect "light" explicitly set in localStorage
+        const initialTheme = localStorage.getItem('theme') === 'light' ? false : true;
+        applyTheme(initialTheme);
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(!isDark);
+            localStorage.setItem('theme', !isDark ? 'dark' : 'light');
+        }
+
+        if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+        if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme);
+
+        // Data Handling
+        let resultsData = sessionStorage.getItem('analysisResults');
+        let currentData = null;
+        let charts = {};
+
+        async function initialize() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const reportId = urlParams.get('id');
+
+            if (!resultsData && reportId) {
+                // Try to fetch from API if session is empty but ID exists
+                console.log(`Session empty, fetching report ${reportId} from API...`);
+                try {
+                    const response = await fetch(`/api/history/${reportId}`);
+                    const result = await response.json();
+                    if (result.success) {
+                        currentData = result.data.data;
+                        sessionStorage.setItem('analysisResults', JSON.stringify(currentData));
+                        sessionStorage.setItem('reportContext', result.data.extracted_text);
+                        resultsData = JSON.stringify(currentData);
+                    }
+                } catch (err) {
+                    console.error("Failed to recover report from API:", err);
+                }
+            }
+
+            if (!resultsData) {
+                window.location.href = '/';
+                return;
+            }
+
             try {
-                await navigator.clipboard.writeText(resultsData);
-                alert('Analysis JSON copied to clipboard!');
-            } catch (err) {
-                alert('Failed to copy: ' + err);
+                currentData = JSON.parse(resultsData);
+                console.log("Loading dashboard with data:", currentData);
+                renderDashboard();
+                renderWordCloud();
+            } catch (e) {
+                console.error("Dashboard Rendering Error:", e);
+                const situationText = document.getElementById('situationText');
+                if (situationText) {
+                    situationText.innerHTML = `<span class="text-red-500 font-bold">Error loading dashboard: ${e.message}</span><br><small>Check console for details.</small>`;
+                    situationText.classList.remove('italic');
+                }
             }
         }
 
-        function showError(message) {
-            loadingDiv.style.display = 'none';
-            errorDiv.style.display = 'block';
-            errorDiv.innerHTML = `
-                <div class="error-card">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <h2>Oops! Something went wrong</h2>
-                    <p>${message}</p>
-                    <button class="retry-btn" onclick="window.location.href='/'">
-                        <i class="fas fa-upload"></i> Upload Another PDF
-                    </button>
-                </div>
+        initialize();
+
+        function renderDashboard() {
+            if (!currentData) return;
+
+            // Overview Tab
+            const dashboardTitle = document.querySelector('h1');
+            if (currentData.summary_title && dashboardTitle) {
+                dashboardTitle.textContent = currentData.summary_title;
+            }
+
+            // Print Header
+            const printTitle = document.getElementById('printTitle');
+            const printMeta = document.getElementById('printMeta');
+            if (printTitle) printTitle.textContent = currentData.summary_title || "Market Analysis Report";
+            if (printMeta) {
+                const date = currentData.generated_at ? new Date(currentData.generated_at).toLocaleString() : new Date().toLocaleString();
+                printMeta.innerHTML = `
+                    <strong>File:</strong> ${currentData.filename || 'Unknown'} | 
+                    <strong>Date:</strong> ${date} | 
+                    <strong>Report ID:</strong> #${currentData.report_id || 'N/A'}
+                `;
+            }
+
+            document.getElementById('situationText').textContent = currentData.current_business_situation;
+            document.getElementById('rawJsonBody').textContent = JSON.stringify(currentData, null, 2);
+
+            // Comparison & Market Banner
+            const compBanner = document.getElementById('comparisonBanner');
+            if (currentData.is_comparison && currentData.comparison_summary && currentData.comparison_summary.trim().length > 0) {
+                compBanner.classList.remove('hidden');
+                document.getElementById('comparisonSummaryText').textContent = currentData.comparison_summary;
+
+                if (currentData.comparison_delta && currentData.comparison_delta.length > 0) {
+                    document.getElementById('comparisonDeltaContainer').classList.remove('hidden');
+                    populateList('comparisonDeltaList', currentData.comparison_delta, 'fa-arrow-trend-up text-primary-500');
+                } else {
+                    document.getElementById('comparisonDeltaContainer').classList.add('hidden');
+                }
+            } else {
+                compBanner.classList.add('hidden');
+            }
+
+
+            // Print Footer Update
+            const printFooter = document.getElementById('printFooter');
+            if (printFooter) {
+                printFooter.innerHTML = `AI Market Analyst Pro | Private & Confidential | Generated: ${new Date().toLocaleDateString()}`;
+            }
+            const distTable = document.getElementById('distributionPrintTable');
+            if (distTable) {
+                distTable.innerHTML = `
+                    <tr class="border-b"><td class="py-2">💪 Strengths</td><td class="text-right font-bold">${currentData.strong_points?.length || 0}</td></tr>
+                    <tr class="border-b"><td class="py-2">⚠️ Weaknesses</td><td class="text-right font-bold">${currentData.weak_points?.length || 0}</td></tr>
+                    <tr class="border-b"><td class="py-2">💡 Suggestions</td><td class="text-right font-bold">${currentData.smart_suggestions?.length || 0}</td></tr>
+                    <tr class="border-b"><td class="py-2">🚀 Moves</td><td class="text-right font-bold">${currentData.next_strategic_moves?.length || 0}</td></tr>
+                    <tr class="border-b"><td class="py-2">🛡️ Risks</td><td class="text-right font-bold">${currentData.risks?.length || 0}</td></tr>
+                `;
+            }
+
+
+
+            // KPI Tiles
+            document.getElementById('kpi-strengths').textContent = (currentData.strong_points || []).length;
+            document.getElementById('kpi-weaknesses').textContent = (currentData.weak_points || []).length;
+            document.getElementById('kpi-suggestions').textContent = (currentData.smart_suggestions || []).length;
+            document.getElementById('kpi-moves').textContent = (currentData.next_strategic_moves || []).length;
+            document.getElementById('kpi-risks').textContent = (currentData.risks || []).length;
+
+            // Key Takeaways
+            populateTakeaways('takeawaysList', currentData.key_takeaways);
+
+            // SWOT Lists
+            populateSwotCard('strongPointsList', currentData.strong_points, 'emerald');
+            populateSwotCard('weakPointsList', currentData.weak_points, 'rose');
+            populateSwotCard('opportunitiesList', currentData.smart_suggestions, 'sky');
+            // Threats quadrant uses risks
+            populateSwotCard('threatsList', (currentData.risks || []).map(r => ({
+                content: r.description,
+                category: r.title
+            })), 'amber');
+
+            // Strategy Lists
+            populateList('suggestionsList', (currentData.smart_suggestions || []).map(s => s.content), 'fa-lightbulb text-amber-500');
+            populateTimeline('movesList', currentData.next_strategic_moves);
+
+            // Render Strategic Heatmap
+            renderHeatmap();
+
+            // Tooltips
+            if (window.tippy) {
+                tippy('#situationTooltip', { content: 'Automated executive summary synthesized from the report contents.' });
+            }
+        }
+
+        // Navigation Helper
+        function navigateToSection(tabId, elementId) {
+            const link = document.querySelector(`[data-tab="${tabId}"]`);
+            if (link) {
+                // Activate Tab
+                link.click();
+
+                // Wait for tab animation/render then scroll
+                setTimeout(() => {
+                    const el = document.getElementById(elementId);
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Add a glow effect temporarily
+                        el.classList.add('ring-4', 'ring-primary-500/30', 'ring-offset-4');
+                        setTimeout(() => el.classList.remove('ring-4', 'ring-primary-500/30', 'ring-offset-4'), 2000);
+                    }
+                }, 300);
+            }
+        }
+
+        // IntelQuest Chat Logic
+        const chatBtn = document.getElementById('intelQuestBtn');
+        const chatWindow = document.getElementById('intelQuestWindow');
+        const closeChat = document.getElementById('closeChat');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendChat');
+        const chatMessages = document.getElementById('chatMessages');
+
+        if (chatBtn && chatWindow) {
+            chatBtn.addEventListener('click', () => {
+                chatWindow.classList.toggle('open');
+                chatBtn.classList.toggle('bg-slate-800');
+                if (chatWindow.classList.contains('open') && chatInput) chatInput.focus();
+            });
+        }
+
+        if (closeChat && chatWindow) {
+            closeChat.addEventListener('click', () => chatWindow.classList.remove('open'));
+        }
+
+        async function postChatMessage() {
+            const query = chatInput.value.trim();
+            if (!query) return;
+
+            const context = sessionStorage.getItem('reportContext');
+            if (!context) {
+                addChatMessage('Sorry, I lost the context of the report. Please try uploading again.', false);
+                return;
+            }
+
+            // UI feedback
+            addChatMessage(query, true);
+            chatInput.value = '';
+            const loadingId = addLoadingMessage();
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, context, analysis_data: currentData })
+                });
+
+                const result = await response.json();
+                removeLoadingMessage(loadingId);
+
+                if (result.success) {
+                    addChatMessage(result.response, false);
+                } else {
+                    addChatMessage("I'm sorry, I encountered an error. " + (result.error || ""), false);
+                }
+            } catch (err) {
+                removeLoadingMessage(loadingId);
+                addChatMessage("Failed to connect to IntelQuest. Please check your connection.", false);
+            }
+        }
+
+        if (sendBtn) sendBtn.addEventListener('click', postChatMessage);
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') postChatMessage();
+            });
+        }
+
+        function addChatMessage(text, isUser) {
+            const msg = document.createElement('div');
+            msg.className = `chat-bubble ${isUser ? 'chat-user' : 'chat-ai'} animate-in fade-in slide-in-from-bottom duration-300`;
+
+            // Basic markdown parsing for bold and newlines
+            let formattedText = text
+                .replace(/</g, "&lt;").replace(/>/g, "&gt;") // sanitize HTML
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+
+            msg.innerHTML = formattedText;
+            chatMessages.appendChild(msg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addLoadingMessage() {
+            const id = 'loading-' + Date.now();
+            const msg = document.createElement('div');
+            msg.id = id;
+            msg.className = 'chat-bubble chat-ai flex gap-2 items-center';
+            msg.innerHTML = `
+                <div class="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce"></div>
+                <div class="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce delay-100"></div>
+                <div class="w-1.5 h-1.5 bg-primary-400 rounded-full animate-bounce delay-200"></div>
             `;
+            chatMessages.appendChild(msg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return id;
+        }
+
+        function removeLoadingMessage(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function populateTakeaways(id, items) {
+            const container = document.getElementById(id);
+            container.innerHTML = '';
+            if (!items || items.length === 0) return;
+            items.forEach(text => {
+                const div = document.createElement('div');
+                div.className = 'flex items-start gap-3 p-4 rounded-2xl bg-white/60 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-primary-200 dark:hover:border-primary-700 transition-all duration-200';
+                div.innerHTML = `
+                    <div class="w-7 h-7 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fas fa-check text-xs text-primary-600"></i>
+                    </div>
+                    <span class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">${text}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function populateList(id, items, iconClass) {
+            const container = document.getElementById(id);
+            container.innerHTML = '';
+            if (items && items.length > 0) {
+                items.forEach(item => {
+                    // Handle both plain strings and object structures
+                    const text = typeof item === 'object' && item !== null ? (item.content || item.title || JSON.stringify(item)) : String(item);
+
+                    const div = document.createElement('div');
+                    div.className = 'list-item group';
+                    div.innerHTML = `
+                        <i class="fas ${iconClass} mt-1.5 group-hover:scale-125 transition-transform"></i>
+                        <span class="text-[0.95rem] text-slate-700 dark:text-slate-300">${text}</span>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        function populateTimeline(id, items) {
+            const container = document.getElementById(id);
+            container.innerHTML = '';
+            if (items && items.length > 0) {
+                items.forEach((item, index) => {
+                    const action = item.action || String(item);
+                    const priority = item.priority || 'Medium';
+                    const timeframe = item.timeframe || 'Mid-term';
+
+                    const priorityColor = {
+                        'High': 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400',
+                        'Medium': 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+                        'Low': 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+                    }[priority] || 'bg-slate-100 text-slate-600';
+
+                    const div = document.createElement('div');
+                    div.className = 'relative pl-14 pb-8 group last:pb-0';
+                    div.innerHTML = `
+                        <div class="absolute left-0 top-0 w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-900/20 border-2 border-primary-500 flex items-center justify-center font-bold text-primary-600 transition-all group-hover:bg-primary-500 group-hover:text-white group-hover:scale-110 duration-300">
+                            ${index + 1}
+                        </div>
+                        <div class="p-5 rounded-3xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-100 dark:border-slate-800 group-hover:shadow-xl transition-all border-l-4 ${priority === 'High' ? 'border-l-rose-500' : (priority === 'Medium' ? 'border-l-amber-500' : 'border-l-emerald-500')}">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest ${priorityColor}">${priority} Priority</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">${timeframe}</span>
+                            </div>
+                            <p class="text-[0.95rem] text-slate-700 dark:text-slate-300 leading-relaxed font-semibold">${action}</p>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        function populateSwotCard(id, items, color) {
+            const container = document.getElementById(id);
+            if (!container) return;
+            container.innerHTML = '';
+            const colorMap = {
+                emerald: 'bg-white/60 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900',
+                rose: 'bg-white/60 dark:bg-rose-900/20 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-900',
+                sky: 'bg-white/60 dark:bg-sky-900/20 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-900',
+                amber: 'bg-white/60 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-900'
+            };
+            const badgeMap = {
+                emerald: 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400',
+                rose: 'bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400',
+                sky: 'bg-sky-100 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400',
+                amber: 'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400'
+            };
+
+            (items || []).forEach((item, i) => {
+                const content = typeof item === 'object' ? item.content : item;
+                const category = typeof item === 'object' ? item.category : 'General';
+
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-2xl border ${colorMap[color] || colorMap.emerald} transition-all hover:shadow-md duration-200 cursor-default`;
+                div.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                         <span class="text-[10px] px-2 py-0.5 rounded-lg font-bold uppercase tracking-wider ${badgeMap[color]}">${category}</span>
+                         <span class="opacity-30 font-black text-[10px]">#${i + 1}</span>
+                    </div>
+                    <p class="text-sm leading-relaxed font-medium">${content}</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // --- Visualizations ---
+
+        function renderCharts() {
+            // Placeholder for future charts if needed
+        }
+
+        function calculateSentiment(data) {
+            const s = data.strong_points?.length || 1;
+            const w = data.weak_points?.length || 1;
+            const total = s + w;
+            return Math.round((s / total) * 100);
+        }
+
+        function renderWordCloud() {
+            // Removed for higher value takeaways
+        }
+
+        function renderHeatmap() {
+            const container = document.getElementById('riskMarkersContainer');
+            const details = document.getElementById('riskDetailCards');
+            if (!container || !currentData || !currentData.risks) return;
+
+            container.innerHTML = '';
+            details.innerHTML = '';
+
+            const risks = currentData.risks;
+            const matrixSize = 5; // 1-5 scale
+
+            risks.forEach((risk, index) => {
+                const marker = document.createElement('div');
+                marker.className = 'risk-marker animate-in zoom-in duration-500';
+
+                const xPos = ((risk.likelihood - 0.5) / matrixSize) * 100;
+                const yPos = (1 - (risk.impact - 0.5) / matrixSize) * 100;
+
+                marker.style.left = `${xPos}%`;
+                marker.style.top = `${yPos}%`;
+                marker.innerHTML = `<span class="risk-label">${risk.title}</span>`;
+
+                if (window.tippy) {
+                    tippy(marker, {
+                        content: `<strong>${risk.title}</strong><br>${risk.description}<br><span class='text-xs opacity-70'>Impact: ${risk.impact} | Likelihood: ${risk.likelihood}</span>`,
+                        allowHTML: true,
+                        placement: 'top'
+                    });
+                }
+                container.appendChild(marker);
+
+                const card = document.createElement('div');
+                card.className = 'p-4 rounded-2xl bg-white/40 dark:bg-slate-800/20 border border-slate-100 dark:border-slate-800 text-sm hover:shadow-md transition-all cursor-default';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center gap-2">
+                             <span class="w-2.5 h-2.5 rounded-full bg-primary-500 shadow-sm shadow-primary-500/50"></span>
+                             <span class="font-bold">${risk.title}</span>
+                        </div>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 font-bold uppercase tracking-wider">R-${index + 1}</span>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">${risk.description}</p>
+                    <div class="flex gap-4 mt-3">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">Impact <span class="print-only font-bold text-rose-600" style="display:none;">— ${risk.impact}/5 &middot; ${Math.round(risk.impact / 5 * 100)}%</span></span>
+                            <div class="flex gap-1 mt-1 print-hidden">
+                                ${Array(5).fill(0).map((_, i) => `<div class="w-3 h-1 rounded-full ${i < risk.impact ? 'bg-rose-500' : 'bg-slate-200 dark:bg-slate-700'}"></div>`).join('')}
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">Likelihood <span class="print-only font-bold text-amber-600" style="display:none;">— ${risk.likelihood}/5 &middot; ${Math.round(risk.likelihood / 5 * 100)}%</span></span>
+                            <div class="flex gap-1 mt-1 print-hidden">
+                                ${Array(5).fill(0).map((_, i) => `<div class="w-3 h-1 rounded-full ${i < risk.likelihood ? 'bg-amber-500' : 'bg-slate-200 dark:bg-slate-700'}"></div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                details.appendChild(card);
+            });
+        }
+
+        // --- Export Functions ---
+        async function copyRawJson() {
+            try {
+                await navigator.clipboard.writeText(JSON.stringify(currentData, null, 2));
+                alert('JSON copied to clipboard!');
+            } catch (err) {
+                alert('Failed to copy data.');
+            }
+        }
+
+        function downloadJson() {
+            const blob = new Blob([JSON.stringify(currentData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `market_analysis_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function exportSlides() {
+            const btn = document.getElementById('exportSlidesBtn');
+            const originalIcon = btn.innerHTML;
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-circle-notch animate-spin text-primary-600"></i>';
+
+                const response = await fetch('/api/export/slides', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        results: currentData,
+                        filename: currentData.filename || 'Analysis_Report'
+                    })
+                });
+
+                if (!response.ok) throw new Error('Generation failed');
+
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Executive_Summary_${Date.now()}.pptx`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('Export error:', err);
+                alert('Failed to generate slides. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalIcon;
+            }
+        }
+
+        // Re-calculate layout on window resize
+        window.addEventListener('resize', () => {
+            renderWordCloud();
+        });
+
+        // --- PDF Export ---
+        function exportToPdf() {
+            if (!currentData) { alert('No analysis data to export.'); return; }
+
+            // 1. Force-show all content tabs EXCEPT data tab
+            const allTabs = document.querySelectorAll('.tab-content');
+            allTabs.forEach(t => {
+                if (t.id !== 'data') {
+                    t.classList.add('active');
+                    t.style.display = 'block';
+                }
+            });
+
+            // 2. Print
+            window.print();
+
+            // 3. Restore state after printing dialog closes
+            setTimeout(() => {
+                // Reset all tabs to hidden
+                allTabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.style.display = '';
+                });
+
+                // Re-activate only the currently selected tab (default: overview)
+                const activeTabLink = document.querySelector('[data-tab].active');
+                const activeId = activeTabLink ? activeTabLink.dataset.tab : 'overview';
+                const activeTab = document.getElementById(activeId);
+                if (activeTab) activeTab.classList.add('active');
+            }, 1500);
         }
     </script>
 </body>
