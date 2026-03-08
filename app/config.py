@@ -14,8 +14,8 @@ class Config:
     
     # Max characters sent to Gemini - reduced slightly to avoid SSL EOF issues
     MAX_INPUT_CHARS = 50_000
-    
-    # Max file size (16MB)
+
+    # Max file size (10MB)
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024
     
     # Validate required settings

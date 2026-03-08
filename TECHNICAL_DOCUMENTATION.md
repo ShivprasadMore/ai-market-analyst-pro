@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="assets/logo.png" alt="AI Market Analyst Pro Logo" width="150" />
-</p>
-
 # AI Market Analyst Pro – Technical Documentation
 *Enterprise Strategic Intelligence Platform*
 
@@ -35,13 +31,30 @@ The platform is built on a modern, decoupled architecture designed for high avai
 
 ---
 
-## 🎥 Demo Video
-A complete walkthrough of the application is available here:  
-**`[Demo video link - will be updated after recording]`**
+## 4. API Interface & Data Contract
+The platform operates as a Document-to-Insight engine through a series of structured REST endpoints.
+
+| Endpoint | Method | Purpose | Key Output |
+| :--- | :--- | :--- | :--- |
+| `/api/analyze` | `POST` | Core Analyst Agent | Structured Analysis JSON |
+| `/api/chat` | `POST` | IntelQuest Follow-up | Contextual Plain Text |
+| `/api/history` | `GET` | History Retrieval | Summary List JSON |
+| `/api/export/slides` | `POST` |  Export | Binary `.pptx` Stream |
+
+### The JSON Data Contract
+In accordance with project requirements, the Analyst Agent enforces a strict JSON schema for all document extractions, ensuring that SWOT, Risk, and Strategic Move data is machine-readable and ready for immediate dashboard visualization.
+
+*For full technical specifications on every endpoint, see [api_docs.md](api_docs.md).*
 
 ---
 
-## 4. Key Implementation Features
+## 🎥 Demo Video
+A complete walkthrough of the application and the technical "Build" walkthrough is available here:  
+**[Watch the Demo Video](https://drive.google.com/file/d/1HrD9APS7GRnf5jS2vHCcErqGi6ZuW2jb/view?usp=sharing)**
+
+---
+
+## 5. Key Implementation Features
 
 ### 🛡️ Data Privacy & Security
 - **Local-First Processing**: Uploaded documents are processed in temporary, secure buffers and cleared immediately after analysis.
@@ -50,7 +63,8 @@ A complete walkthrough of the application is available here:
 
 ### 🤖 High-Availability AI Logic
 - **4-Stage Fallback Chain**: To ensure zero downtime, the system automatically cycles through `Gemini 3.0 Flash`, `3.1 Flash-Lite`, and `2.5 Flash` variants if primary quotas are hit.
-- **JSON-Schema Enforcement**: Unlike basic chatbots, this engine uses strict schema enforcement to guarantee that dashboard data always matches the expected technical format.
+- **Strict JSON Data Contract**: The agent is hard-coded to return analysis in a structured JSON format. This ensures that the dashboard, risk heatmaps, and trend visualizations are always populated with validated, machine-readable data.
+- **JSON-Schema Enforcement**: Uses strict schema enforcement to guarantee that the AI's output always matches the expected technical format for downstream processing.
 
 ### 📊 Professional Output Engine
 - **Risk Heatmap**: Dynamically plots **Impact vs. Likelihood**, allowing executives to visually prioritize fire-drills vs. long-term strategic threats.
@@ -58,7 +72,7 @@ A complete walkthrough of the application is available here:
 
 ---
 
-## 5. Testing 
+## 6. Testing 
 The platform has undergone a "Hardening Pass" to ensure stability under enterprise conditions:
 - **Stress Testing**: Successfully processed 100+ page Tesla (79pg) and typical 10-K filings.
 - **Error Resilience**: Implemented specialized handlers for:

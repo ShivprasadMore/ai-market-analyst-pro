@@ -1,5 +1,5 @@
 # AI Market Analyst Pro 📊
-*Enterprise Strategic Intelligence Platform*
+*Advanced Market Research Analyst AI Agent*
 
 AI Market Analyst Pro is a high-performance strategic intelligence platform designed to bridge the gap between massive, unstructured corporate data and executive decision-making. By transforming 50-100+ page annual reports and market filings into structured, visually intuitive dashboards, the platform significantly accelerates time-to-insight for consultancy and executive teams.
 
@@ -19,8 +19,8 @@ The platform is built on a modern, decoupled architecture designed for high avai
 ---
 
 ## 🎥 Demo Video
-A complete walkthrough of the application is available here:  
-**`[Demo video link - will be updated after recording]`**
+A complete walkthrough of the application and the building process is available here:  
+**[Watch the Demo Video](https://drive.google.com/file/d/1HrD9APS7GRnf5jS2vHCcErqGi6ZuW2jb/view?usp=sharing)**
 
 ---
 
